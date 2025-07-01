@@ -6,8 +6,8 @@ The Hospital Management System (Online Only). This system is intended to provide
 
 ## 🌐 Live Demo
 
-- **Backend API**: [https://medica-server.vercel.app](https://medica-server.vercel.app)
-- **Frontend**: [https://medica.vercel.app](https://medica.vercel.app)
+- **Backend API**: [https://medica-server.onrender.com](https://medica-server.onrender.com)
+- **Frontend**: [https://medica-health.vercel.app](https://medica-health.vercel.app)
 - **GitHub Code**: [https://github.com/modasser-nayem/medica-p16](https://github.com/modasser-nayem/medica-p16)
 
 ---
@@ -81,17 +81,17 @@ The backend follows a layered, modular architecture with:
 
 ## 👥 Roles & Permissions
 
-| Role       | Capabilities                                               |
-| ---------- | ---------------------------------------------------------- |
-|  |        |
-|  |        |
-|  |        |
+| Role | Capabilities |
+| ---- | ------------ |
+|      |              |
+|      |              |
+|      |              |
 
 ---
 
 ## 📬 API Endpoints
 
-> Base URL: `https://medica-server.vercel.app/api/v1`
+> Base URL: `https://medica-server.onrender.com/api/v1`
 
 - **API Documentation (postman)**: []()
 
