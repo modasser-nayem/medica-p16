@@ -8,9 +8,391 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// =================== ENUMS ===================
+enum UserRole {
+  PATIENT
+  DOCTOR
+  ADMIN
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+enum ConsultationType {
+  CHAT
+  VOICE
+  VIDEO
+}
+
+enum ConsultationStatus {
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum CallStatus {
+    INITIATED 
+    RINGING 
+    ANSWERED 
+    REJECTED 
+    ENDED 
+    MISSED
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+enum NotificationType {
+  APPOINTMENT
+  PRESCRIPTION
+  PAYMENT
+  SYSTEM
+}
+
+// =================== USER & ROLES ===================
 model User {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  password     String
+  phone        String?
+  dateOfBirth  DateTime?
+  gender       String?
+  address      String?
+  profileImage String?
+  role         UserRole @default(PATIENT)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  doctorProfile     Doctor?
+  patientProfile    Patient?
+  adminProfile      Admin?
+  notifications     Notification[]
+  auditLogs         AuditLog[]
+  notificationSettings UserNotificationSettings?
+
+  // Communication
+  sentMessages      ChatMessage[] @relation("SentMessages")
+  receivedMessages  ChatMessage[] @relation("ReceivedMessages")
+  videoCallsAsCaller    VideoCall[] @relation("VideoCaller")
+  videoCallsAsReceiver  VideoCall[] @relation("VideoReceiver")
+  voiceCallsAsCaller    VoiceCall[] @relation("VoiceCaller")
+  voiceCallsAsReceiver  VoiceCall[] @relation("VoiceReceiver")
+
+  @@map("users")
+}
+
+model Doctor {
+  id              String   @id @default(uuid())
+  userId          String   @unique
+  departmentId    String
+  specialization  String
+  qualifications  String
+  experience      Int
+  licenseNumber   String   @unique
+  isAvailable     Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user            User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  department      Department @relation(fields: [departmentId], references: [id])
+  schedules       Schedule[]
+  appointments    Appointment[]
+  prescriptions   Prescription[]
+  fees            ConsultationFee[]
+  reviews         Review[]
+
+  @@map("doctors")
+}
+
+model Patient {
+  id              String   @id @default(uuid())
+  userId          String   @unique
+  bloodGroup      String?
+  emergencyContact String?
+  medicalHistory  String?
+  allergies       String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user            User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  appointments    Appointment[]
+  prescriptions   Prescription[]
+  payments        Payment[]
+  reviews         Review[]
+
+  @@map("patients")
+}
+
+model Admin {
   id        String   @id @default(uuid())
-  name      String
-  email     String   @unique
-  password  String
+  userId    String   @unique
+  role      String   @default("ADMIN")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@map("admins")
+}
+
+
+// =================== DEPARTMENT ===================
+model Department {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  doctors     Doctor[]
+
+  @@map("departments")
+}
+
+model Schedule {
+  id          String   @id @default(uuid())
+  doctorId    String
+  dayOfWeek   Int
+  startTime   String
+  endTime     String
+  isAvailable Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  doctor      Doctor   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+
+  @@map("schedules")
+}
+
+// =================== CONSULTATION ===================
+model Appointment {
+  id          String            @id @default(uuid())
+  patientId   String
+  doctorId    String
+  date        DateTime
+  time        String
+  type        ConsultationType
+  price       Decimal           @db.Decimal(10, 2)
+  isPaid      Boolean           @default(false)
+  status      AppointmentStatus @default(PENDING)
+  problem     String
+  notes       String?
+  paymentId   String?           @unique
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  patient     Patient           @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  doctor      Doctor            @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  consultation Consultation?
+  payment     Payment?          @relation(fields: [paymentId], references: [id])
+
+  chatMessages ChatMessage[]
+  videoCalls   VideoCall[]
+  voiceCalls   VoiceCall[]
+
+  @@map("appointments")
+}
+
+model Consultation {
+  id             String             @id @default(uuid())
+  appointmentId  String             @unique
+  status         ConsultationStatus @default(SCHEDULED)
+  startTime      DateTime?
+  endTime        DateTime?
+  notes          String?
+  summary        String?
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  appointment    Appointment        @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  prescriptions  Prescription[]
+
+  @@map("consultations")
+}
+
+model Prescription {
+  id             String   @id @default(uuid())
+  consultationId String
+  doctorId       String
+  patientId      String
+  medicines      Json
+  instructions   String
+  diagnosis      String?
+  nextVisit      DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  consultation   Consultation @relation(fields: [consultationId], references: [id], onDelete: Cascade)
+  doctor         Doctor       @relation(fields: [doctorId], references: [id])
+  patient        Patient      @relation(fields: [patientId], references: [id])
+
+  @@map("prescriptions")
+}
+
+model ConsultationFee {
+  id        String            @id @default(uuid())
+  doctorId  String
+  type      ConsultationType
+  fee       Decimal           @db.Decimal(10, 2)
+
+  doctor    Doctor            @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  @@unique([doctorId, type])
+  @@map("consultation_fees")
+}
+
+// =================== PAYMENTS ===================
+
+model Payment {
+  id              String        @id @default(uuid())
+  amount          Decimal       @db.Decimal(10, 2)
+  currency        String        @default("USD")
+  status          PaymentStatus @default(PENDING)
+  stripePaymentId String?
+  description     String?
+  patientId       String
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  patient         Patient       @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  appointment     Appointment?
+
+  @@map("payments")
+}
+
+// =================== EXTRAS ===================
+model Notification {
+  id        String           @id @default(uuid())
+  userId    String
+  type      NotificationType
+  title     String
+  message   String
+  isRead    Boolean          @default(false)
+  data      Json?
+  createdAt DateTime         @default(now())
+
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
+model ChatMessage {
+  id          String   @id @default(uuid())
+  senderId    String
+  receiverId  String
+  appointmentId String
+  message     String
+  messageType String   @default("TEXT")
+  isRead      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  sender      User     @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver    User     @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+  appointment Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+
+  @@map("chat_messages")
+}
+
+model VideoCall {
+  id           String   @id @default(uuid())
+  callerId     String
+  receiverId   String
+  appointmentId String
+  status       CallStatus   @default(INITIATED)
+  startTime    DateTime?
+  endTime      DateTime?
+  duration     Int?
+  roomId       String?
+  recordingUrl String?
+  notes        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  caller       User     @relation("VideoCaller", fields: [callerId], references: [id], onDelete: Cascade)
+  receiver     User     @relation("VideoReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+  appointment Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+
+  @@map("video_calls")
+}
+
+model VoiceCall {
+  id           String   @id @default(uuid())
+  callerId     String
+  receiverId   String
+  appointmentId String
+  status       CallStatus   @default(INITIATED)
+  startTime    DateTime?
+  endTime      DateTime?
+  duration     Int?
+  recordingUrl String?
+  notes        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  caller       User     @relation("VoiceCaller", fields: [callerId], references: [id], onDelete: Cascade)
+  receiver     User     @relation("VoiceReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+  appointment Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+
+  @@map("voice_calls")
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String
+  action    String
+  entity    String
+  entityId  String?
+  details   Json?
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("audit_logs")
+}
+
+model UserNotificationSettings {
+  id                    String   @id @default(uuid())
+  userId                String   @unique
+  emailNotifications    Boolean  @default(true)
+  smsNotifications      Boolean  @default(true)
+  pushNotifications     Boolean  @default(true)
+  appointmentReminders  Boolean  @default(true)
+  consultationReminders Boolean  @default(true)
+  paymentReminders      Boolean  @default(true)
+  marketingEmails       Boolean  @default(false)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_notification_settings")
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  patientId String
+  doctorId  String
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  patient   Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  doctor    Doctor   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+
+  @@map("reviews")
 }
