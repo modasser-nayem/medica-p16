@@ -14,5 +14,5 @@ export interface PaginationQuery {
 
 export interface PaginatedResult<T> {
   data: T[];
-  meta: TMetaData;
+  pagination: TMetaData;
 }

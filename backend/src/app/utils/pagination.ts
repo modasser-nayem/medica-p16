@@ -1,23 +1,25 @@
 import { PaginatedResult } from "../types/pagination";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-export async function paginate<T>({
+export async function paginate<Where, Select, Result>({
   model,
   page = 1,
   limit = 10,
-  where = {},
+  where,
   select,
   sortBy = "createdAt",
   sortOrder = "desc",
+  customSorting,
 }: {
   model: any;
-  page?: number;
-  limit?: number;
-  where?: any;
-  select?: any;
+  page?: number | string;
+  limit?: number | string;
+  where?: Where;
+  select?: Select;
   sortBy?: string;
   sortOrder?: "asc" | "desc";
-}): Promise<PaginatedResult<T>> {
+  customSorting?: any;
+}): Promise<PaginatedResult<Result>> {
   page = Number(page);
   limit = Number(limit);
 
@@ -25,18 +27,18 @@ export async function paginate<T>({
 
   const [data, total] = await Promise.all([
     model.findMany({
-      where,
+      where: where ? where : {},
       select,
       skip,
       take: limit,
-      orderBy: { [sortBy]: sortOrder },
+      orderBy: customSorting ? customSorting : { [sortBy]: sortOrder },
     }),
     model.count({ where }),
   ]);
 
   return {
     data,
-    meta: {
+    pagination: {
       total,
       page,
       limit,
