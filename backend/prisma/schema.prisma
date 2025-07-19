@@ -165,8 +165,8 @@ model Schedule {
   id          String   @id @default(uuid())
   doctorId    String
   dayOfWeek   Int
-  startTime   String
-  endTime     String
+  startTime   DateTime
+  endTime     DateTime
   isAvailable Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -182,12 +182,11 @@ model Appointment {
   patientId   String
   doctorId    String
   date        DateTime
-  time        String
+  time        DateTime
   type        ConsultationType
   price       Decimal           @db.Decimal(10, 2)
   isPaid      Boolean           @default(false)
   status      AppointmentStatus @default(PENDING)
-  problem     String
   notes       String?
   paymentId   String?           @unique
   createdAt   DateTime          @default(now())
