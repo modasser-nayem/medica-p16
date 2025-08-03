@@ -14,14 +14,28 @@ const createAppointment = asyncHandler(async (req, res) => {
 });
 
 const getAppointments = asyncHandler(async (req, res) => {
-  const result = await appointmentService.getAppointments(req.query);
+  const result = await appointmentService.getAppointments({
+    userId: req.user.userId,
+    filters: req.query,
+  });
 
   sendResponse(res, {
-    statusCode: 201,
+    statusCode: 200,
     success: true,
     message: "Appointments Successfully Retrieved",
     data: result.data,
     pagination: result.pagination,
+  });
+});
+
+const getAppointmentDetails = asyncHandler(async (req, res) => {
+  const result = await appointmentService.getAppointmentDetails(req.params.id);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Appointment Successfully Retrieved",
+    data: result,
   });
 });
 
@@ -61,26 +75,23 @@ const deleteAppointment = asyncHandler(async (req, res) => {
   });
 });
 
-const testController = asyncHandler(async (req, res) => {
-  const result = {
-    body: req.body,
-    params: req.params,
-    query: req.query,
-    user: req.user,
-  };
+const getDoctorAvailableSlots = asyncHandler(async (req, res) => {
+  const result = await appointmentService.getDoctorAvailableSlots(req.body);
+
   sendResponse(res, {
     statusCode: 200,
     success: true,
-    message: "Test Controller",
+    message: "Successfully get available slots",
     data: result,
   });
 });
 
 export const appointmentController = {
-  testController,
   createAppointment,
   getAppointments,
+  getAppointmentDetails,
   rescheduleAppointment,
   cancelAppointment,
   deleteAppointment,
+  getDoctorAvailableSlots,
 };

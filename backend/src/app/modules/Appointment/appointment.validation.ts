@@ -33,7 +33,15 @@ const rescheduleAppointment = z.object({
   }),
 });
 
+const doctorAvailableSlots = z.object({
+  body: z.object({
+    doctorId: z.string({ required_error: "doctorId is required" }).uuid(),
+    date: z.string({ required_error: "date is required" }).datetime(),
+  }),
+});
+
 export const appointmentSchemaValidation = {
   createAppointment,
   rescheduleAppointment,
+  doctorAvailableSlots,
 };

@@ -5,6 +5,7 @@ import { departmentRoutes } from "../modules/Department/department.routes";
 import { doctorRoutes } from "../modules/Doctor/doctor.routes";
 import { appointmentRoutes } from "../modules/Appointment/appointment.routes";
 import { consultationRoutes } from "../modules/Consultation/consultation.routes";
+import { analyticsRouters } from "../modules/Analytics/analytics.routes";
 
 const routers = Router();
 const moduleRoutes: { path: string; route: Router }[] = [
@@ -13,19 +14,23 @@ const moduleRoutes: { path: string; route: Router }[] = [
     route: authRoutes,
   },
   {
-    path: "/users",
+    path: "/",
     route: userRoutes,
+  },
+  {
+    path: "/",
+    route: analyticsRouters,
   },
   {
     path: "/departments",
     route: departmentRoutes,
   },
   {
-    path: "/doctors",
+    path: "/doctor",
     route: doctorRoutes,
   },
   {
-    path: "/appointments",
+    path: "/",
     route: appointmentRoutes,
   },
   {

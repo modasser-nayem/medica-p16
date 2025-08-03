@@ -1,4 +1,5 @@
 import { AppointmentStatus } from "@prisma/client";
+import { PaginationQuery } from "../../types/pagination";
 
 export interface ICreateAppointment {
   patientId: string;
@@ -16,11 +17,9 @@ export interface IRescheduleAppointment {
   notes?: string;
 }
 
-export interface IGetAppointmentsQuery {
+export interface IGetAppointmentsFilters extends PaginationQuery {
   date?: string;
   startDate?: string;
   endDate?: string;
   status?: AppointmentStatus;
-  page?: string;
-  limit?: string;
 }

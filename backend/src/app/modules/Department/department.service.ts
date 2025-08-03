@@ -31,19 +31,20 @@ const getAllDepartments = async (filters: TGetDepartmentsFilter) => {
     limit = 10,
     sortBy = "createdAt",
     sortOrder = "desc",
+    active,
+    search,
   } = filters;
 
   const where: Prisma.DepartmentWhereInput = {};
 
-  if (
-    filters.isActive !== undefined &&
-    (filters.isActive === "true" || filters.isActive === "false")
-  ) {
-    where.isActive = filters.isActive === "true";
+  if (active) {
+    if (active === "yes" || active === "no") {
+      where.isActive = active === "yes" ? true : false;
+    }
   }
 
-  if (filters.search) {
-    where.name = { contains: filters.search, mode: "insensitive" };
+  if (search) {
+    where.name = { contains: search, mode: "insensitive" };
   }
 
   const result = await paginate({

@@ -9,7 +9,7 @@ const router = Router();
 // Create consultation fees
 router.post(
   "/fees",
-  authorize(),
+  authorize("DOCTOR"),
   requestValidate(consultationSchemaValidation.createOrUpdateConsultationFees),
   consultationController.createOrUpdateConsultationFees,
 );
@@ -20,7 +20,7 @@ router.get("/fees/:doctorId", consultationController.getConsultationFees);
 // Delete consultation fees
 router.delete(
   "/fees/:id",
-  authorize(),
+  authorize("DOCTOR"),
   consultationController.deleteConsultationFees,
 );
 

@@ -2,7 +2,6 @@ import { Prisma } from "@prisma/client";
 import prisma from "../../db/connector";
 import AppError from "../../errors/AppError";
 import {
-  IGetUserActivityFilters,
   IUserProfileWithDetails,
   TGetDoctorsFilter,
   TGetUsersFilter,
@@ -12,6 +11,9 @@ import {
 } from "./user.interface";
 import { paginate } from "../../utils/pagination";
 
+// ======================================
+//                User
+// ======================================
 // Get user profile
 const getUserProfile = async (userId: string) => {
   const user = await prisma.user.findUnique({
@@ -175,39 +177,281 @@ const updateAdminProfile = async (payload: {
   return result;
 };
 
+// ======================================
+//                Patient
+// ======================================
+
+// Get Doctors
+const getDoctors = async (filters: TGetDoctorsFilter) => {
+  const page = Number(filters.page || 1);
+  const limit = Number(filters.limit || 10);
+  const rating = Number(filters.rating);
+  const skip = (page - 1) * limit;
+  const { search, specialty, available, sortBy, sortOrder } = filters;
+
+  const where: Prisma.DoctorWhereInput = {
+    user: { isActive: true },
+  };
+
+  if (available) {
+    if (available === "yes" || available === "no") {
+      where.isAvailable = available === "yes" ? true : false;
+    }
+  }
+
+  if (specialty) {
+    where.specialization = specialty;
+  }
+
+  if (search) {
+    where.user = { name: { contains: search, mode: "insensitive" } };
+  }
+
+  if (rating) {
+    where.reviews = { some: { rating: { gte: rating } } };
+  }
+
+  // Fetch doctors
+  const doctors = await prisma.doctor.findMany({
+    where,
+    select: {
+      id: true,
+      specialization: true,
+      qualifications: true,
+      experience: true,
+      isAvailable: true,
+      createdAt: true,
+      user: {
+        select: {
+          id: true,
+          name: true,
+          dateOfBirth: true,
+          profileImage: true,
+        },
+      },
+      department: { select: { id: true, name: true } },
+      reviews: {
+        select: {
+          rating: true,
+        },
+      },
+      _count: {
+        select: {
+          reviews: true,
+        },
+      },
+    },
+    skip,
+    take: limit,
+  });
+
+  // Calculate Average Rating for each doctor
+  const enrichedDoctors = doctors.map((doctor) => {
+    const totalReviews = doctor._count.reviews || 0;
+
+    const totalRating = doctor.reviews.reduce((sum, r) => sum + r.rating, 0);
+    const averageRating = totalReviews > 0 ? totalRating / totalReviews : 0;
+
+    const { reviews, _count, ...rest } = doctor;
+
+    return {
+      ...rest,
+      totalReviews,
+      averageRating: Number(averageRating.toFixed(2)),
+    };
+  });
+
+  // Sorting based on user provided sort
+  const sortedDoctors = enrichedDoctors.sort((a, b) => {
+    if (filters.sortBy === "rating") {
+      return filters.sortOrder === "asc"
+        ? a.averageRating - b.averageRating
+        : b.averageRating - a.averageRating;
+    }
+
+    if (filters.sortBy === "createdAt") {
+      return filters.sortOrder === "asc"
+        ? new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+        : new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    }
+
+    return 0;
+  });
+
+  const total = sortedDoctors.length;
+  const paginatedDoctors = sortedDoctors.slice(0, limit); // already skipped during query
+
+  return {
+    data: paginatedDoctors,
+    pagination: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
+};
+
+// TODO: Get Doctor Details
+const getDoctorDetails = async (doctorId: string) => {
+  const doctor = await prisma.doctor.findUnique({
+    where: { id: doctorId },
+    select: {
+      id: true,
+      specialization: true,
+      qualifications: true,
+      experience: true,
+      licenseNumber: true,
+      isAvailable: true,
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          phone: true,
+          dateOfBirth: true,
+          gender: true,
+          address: true,
+          profileImage: true,
+          isActive: true,
+        },
+      },
+      department: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+      fees: {
+        select: {
+          id: true,
+          type: true,
+          fee: true,
+        },
+      },
+      schedules: {
+        select: {
+          id: true,
+          dayOfWeek: true,
+          startTime: true,
+          endTime: true,
+          isAvailable: true,
+        },
+      },
+      reviews: {
+        select: {
+          id: true,
+          comment: true,
+          rating: true,
+          patient: {
+            select: {
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                  profileImage: true,
+                },
+              },
+            },
+          },
+        },
+      },
+      _count: {
+        select: {
+          reviews: true,
+          appointments: {
+            where: { status: "COMPLETED" },
+          },
+        },
+      },
+    },
+  });
+
+  if (!doctor) {
+    throw new AppError(400, "Invalid Doctor ID");
+  }
+
+  const {
+    id,
+    specialization,
+    qualifications,
+    experience,
+    licenseNumber,
+    isAvailable,
+    user,
+    department,
+    fees,
+    schedules,
+    reviews,
+    _count,
+  } = doctor;
+
+  const totalReviews = _count?.reviews || 0;
+  const averageRating =
+    reviews.length > 0
+      ? parseFloat(
+          (
+            reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+          ).toFixed(2),
+        )
+      : 0;
+
+  const result = {
+    id,
+    name: user.name,
+    email: user.email,
+    phone: user.phone,
+    dateOfBirth: user.dateOfBirth,
+    gender: user.gender,
+    address: user.address,
+    profileImage: user.profileImage,
+    specialization,
+    qualifications,
+    experience,
+    licenseNumber,
+    isAvailable,
+    isActive: user.isActive,
+    userId: user.id,
+    department,
+    fees,
+    schedules,
+    reviews,
+    totalReviews,
+    averageRating,
+    completedAppointments: _count?.appointments || 0,
+  };
+
+  return result;
+};
+
+// ======================================
+//                Admin
+// ======================================
+
 // Get Users
 const getUsers = async (filters: TGetUsersFilter) => {
-  const { page, limit, sortBy, sortOrder } = filters;
+  const page = Number(filters.page || 1);
+  const limit = Number(filters.limit || 10);
+
+  const { search, active, role, sortBy, sortOrder } = filters;
 
   const where: Prisma.UserWhereInput = {};
 
-  if (filters.role) {
-    where.role = filters.role;
+  if (role) {
+    where.role = role;
   }
 
-  if (filters.isActive !== undefined) {
-    where.isActive = filters.isActive;
+  if (active) {
+    if (active === "yes" || active === "no") {
+      where.isActive = active === "yes" ? true : false;
+    }
   }
 
-  if (filters.search) {
+  if (search) {
     where.OR = [
       { name: { contains: filters.search, mode: "insensitive" } },
       { email: { contains: filters.search, mode: "insensitive" } },
     ];
-  }
-
-  // Add department and specialization filters for doctors
-  if (filters.departmentId || filters.specialization) {
-    where.doctorProfile = {};
-    if (filters.departmentId) {
-      where.doctorProfile.departmentId = filters.departmentId;
-    }
-    if (filters.specialization) {
-      where.doctorProfile.specialization = {
-        contains: filters.specialization,
-        mode: "insensitive",
-      };
-    }
   }
 
   const select: Prisma.UserSelect = {
@@ -223,21 +467,6 @@ const getUsers = async (filters: TGetUsersFilter) => {
     isActive: true,
     createdAt: true,
     updatedAt: true,
-    patientProfile: true,
-    doctorProfile: {
-      select: {
-        id: true,
-        specialization: true,
-        qualifications: true,
-        licenseNumber: true,
-        experience: true,
-        isAvailable: true,
-        department: {
-          select: { id: true, name: true },
-        },
-      },
-    },
-    adminProfile: true,
   };
 
   const result = await paginate({
@@ -251,125 +480,6 @@ const getUsers = async (filters: TGetUsersFilter) => {
   });
 
   return result;
-};
-
-// Get Doctors
-const getDoctors = async (filters: TGetDoctorsFilter) => {
-  const page = Number(filters.page || 1);
-  const limit = Number(filters.limit || 10);
-  const rating = Number(filters.rating);
-  const { sortBy, sortOrder } = filters;
-
-  const where: Prisma.DoctorWhereInput = {
-    user: { isActive: true },
-  };
-
-  if (filters.isAvailable !== undefined) {
-    where.isAvailable = filters.isAvailable;
-  }
-
-  if (filters.specialization) {
-    where.specialization = filters.specialization;
-  }
-
-  if (filters.search) {
-    where.user = { name: { contains: filters.search, mode: "insensitive" } };
-  }
-
-  if (filters.departmentId) {
-    where.departmentId = filters.departmentId;
-  }
-
-  // Fetch doctors + reviews
-  const doctors = await prisma.doctor.findMany({
-    where,
-    select: {
-      id: true,
-      specialization: true,
-      qualifications: true,
-      licenseNumber: true,
-      experience: true,
-      isAvailable: true,
-      user: {
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          phone: true,
-          dateOfBirth: true,
-          gender: true,
-          address: true,
-          profileImage: true,
-        },
-      },
-      department: { select: { id: true, name: true } },
-      reviews: true,
-    },
-  });
-
-  // Calculate average rating per doctor and filter by rating (if given)
-  const doctorsWithAvgRating = doctors
-    .map((doctor) => {
-      const avgRating =
-        doctor.reviews.reduce((acc, r) => acc + r.rating, 0) /
-        (doctor.reviews.length || 1);
-
-      const { reviews, ...doctorData } = doctor;
-
-      return {
-        ...doctorData,
-        totalReviews: doctor.reviews.length,
-        averageRating: parseFloat(avgRating.toFixed(2)),
-      };
-    })
-    .filter((doc) =>
-      rating ? Math.floor(doc.averageRating) === rating : true,
-    );
-
-  // Sort by average rating if requested
-  const sortedDoctors = [...doctorsWithAvgRating].sort((a, b) => {
-    if (sortBy === "averageRating") {
-      if (sortOrder === "asc") return a.averageRating - b.averageRating;
-      return b.averageRating - a.averageRating;
-    }
-    return 0;
-  });
-
-  // Paginate manually
-  const start = (page - 1) * limit;
-  const paginatedDoctors = sortedDoctors.slice(start, start + limit);
-  const totalItem = sortedDoctors.length;
-
-  return {
-    data: paginatedDoctors,
-    pagination: {
-      total: totalItem,
-      page,
-      limit,
-      totalPages: Math.ceil(totalItem / limit),
-    },
-  };
-};
-
-// Get Doctor By ID
-const getDoctorById = async (id: string) => {
-  const doctor = await prisma.doctor.findUnique({
-    where: { id },
-    include: {
-      user: true,
-      department: true,
-      appointments: { include: { _count: true } },
-      fees: true,
-      reviews: true,
-      schedules: true,
-    },
-  });
-
-  if (!doctor) {
-    throw new AppError(400, "Invalid Doctor ID");
-  }
-
-  return doctor;
 };
 
 // Update User Status
@@ -405,200 +515,14 @@ const deleteUser = async (userId: string) => {
   return user;
 };
 
-// Get User Stats
-const getUserStats = async (filters: {
-  startDate: string;
-  endDate: string;
-}) => {
-  const { startDate, endDate } = filters;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const where: any = {};
-
-  if (startDate && endDate) {
-    where.createdAt = {
-      gte: new Date(startDate),
-      lte: new Date(endDate),
-    };
-  }
-
-  const [total, byRole, active, newThisMonth, newThisWeek] = await Promise.all([
-    prisma.user.count({ where }),
-    prisma.user.groupBy({
-      by: ["role"],
-      where,
-      _count: { role: true },
-    }),
-    prisma.user.count({ where: { ...where, isActive: true } }),
-    prisma.user.count({
-      where: {
-        ...where,
-        createdAt: {
-          gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
-        },
-      },
-    }),
-    prisma.user.count({
-      where: {
-        ...where,
-        createdAt: {
-          gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
-        },
-      },
-    }),
-  ]);
-
-  const roleCounts: Record<string, number> = {};
-  byRole.forEach((item) => {
-    roleCounts[item.role] = item._count.role;
-  });
-
-  return {
-    total,
-    byRole: roleCounts,
-    active,
-    online: 0,
-    newThisMonth,
-    newThisWeek,
-  };
-};
-
-// Get User Activity
-const getUserActivity = async (filters: IGetUserActivityFilters) => {
-  const { page = 1, limit = 10, sortBy, sortOrder } = filters;
-
-  const where: Prisma.AuditLogWhereInput = {};
-  const select: Prisma.AuditLogSelect = {
-    id: true,
-    userId: true,
-    user: {
-      select: {
-        id: true,
-        name: true,
-        email: true,
-      },
-    },
-    action: true,
-    entity: true,
-    entityId: true,
-    details: true,
-    ipAddress: true,
-    userAgent: true,
-    createdAt: true,
-  };
-
-  if (filters.userId) {
-    where.userId = filters.userId;
-  }
-
-  if (filters.action) {
-    where.action = filters.action;
-  }
-
-  if (filters.entity) {
-    where.entity = filters.entity;
-  }
-
-  if (filters.startDate && filters.endDate) {
-    where.createdAt = {
-      gte: new Date(filters.startDate),
-      lte: new Date(filters.endDate),
-    };
-  }
-
-  const result = await paginate({
-    model: prisma.auditLog,
-    where,
-    select,
-    page,
-    limit,
-    sortBy,
-    sortOrder,
-  });
-
-  return result;
-};
-
-// Get User Dashboard,
-const getUserDashboard = async (userId: string) => {
-  const user = await prisma.user.findUnique({ where: { id: userId } });
-
-  if (!user) {
-    throw new AppError(400, "Invalid User Id");
-  }
-
-  const appointmentWhere: Prisma.AppointmentWhereInput = {};
-  const consultationWhere: Prisma.ConsultationWhereInput = {};
-  const prescriptionWhere: Prisma.PrescriptionWhereInput = {};
-  const paymentWhere: Prisma.PaymentWhereInput = {
-    status: "COMPLETED",
-  };
-  const auditLogWhere: Prisma.AuditLogWhereInput = {};
-
-  if (user.role === "PATIENT") {
-    appointmentWhere.patientId = user.id;
-    consultationWhere.appointment = { patientId: user.id };
-    prescriptionWhere.patientId = user.id;
-    auditLogWhere.userId = user.id;
-    paymentWhere.patientId = user.id;
-  }
-
-  if (user.role === "DOCTOR") {
-    appointmentWhere.doctorId = user.id;
-    consultationWhere.appointment = { doctorId: user.id };
-    prescriptionWhere.doctorId = user.id;
-    auditLogWhere.userId = user.id;
-    paymentWhere.appointment = { doctorId: user.id };
-  }
-
-  const [totalAppointments, totalConsultations, totalPrescriptions] =
-    await Promise.all([
-      prisma.appointment.count({ where: appointmentWhere }),
-      prisma.consultation.count({ where: consultationWhere }),
-      prisma.prescription.count({ where: prescriptionWhere }),
-    ]);
-
-  const recentActivity = await prisma.auditLog.findMany({
-    where: auditLogWhere,
-    take: 10,
-    orderBy: { createdAt: "desc" },
-    include: {
-      user: {
-        select: {
-          id: true,
-          name: true,
-          email: true,
-        },
-      },
-    },
-  });
-
-  const totalPayments = (
-    await prisma.payment.findMany({ where: paymentWhere })
-  ).reduce((acc, pay) => acc + Number(pay.amount), 0);
-
-  return {
-    user,
-    stats: {
-      totalAppointments,
-      totalConsultations,
-      totalPrescriptions,
-      totalPayments,
-    },
-    recentActivity: recentActivity,
-  };
-};
-
 export const userService = {
   getUserProfile,
   updatePatientProfile,
   updateDoctorProfile,
   updateAdminProfile,
-  getUsers,
   getDoctors,
-  getDoctorById,
+  getDoctorDetails,
+  getUsers,
   updateUserStatus,
   deleteUser,
-  getUserStats,
-  getUserActivity,
-  getUserDashboard,
 };
