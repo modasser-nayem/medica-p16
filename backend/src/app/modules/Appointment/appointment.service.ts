@@ -4,7 +4,7 @@ import AppError from "../../errors/AppError";
 import { paginate } from "../../utils/pagination";
 import {
   ICreateAppointment,
-  IGetAppointmentsQuery,
+  IGetAppointmentsFilters,
   IRescheduleAppointment,
 } from "./appointment.interface";
 
@@ -167,10 +167,30 @@ const createAppointment = async (data: ICreateAppointment) => {
   return result;
 };
 
-const getAppointments = async (filters: IGetAppointmentsQuery) => {
-  const { page, limit, date, startDate, endDate, status } = filters;
+const getAppointments = async ({
+  userId,
+  filters,
+}: {
+  userId: string;
+  filters: IGetAppointmentsFilters;
+}) => {
+  const {
+    page,
+    limit,
+    date,
+    startDate,
+    endDate,
+    status,
+    sortBy = "date",
+    sortOrder = "desc",
+  } = filters;
 
-  const where: Prisma.AppointmentWhereInput = {};
+  const where: Prisma.AppointmentWhereInput = {
+    OR: [
+      { doctor: { user: { id: userId } } },
+      { patient: { user: { id: userId } } },
+    ],
+  };
 
   if (status) where.status = status;
 
@@ -183,14 +203,132 @@ const getAppointments = async (filters: IGetAppointmentsQuery) => {
     };
   }
 
+  const select: Prisma.AppointmentSelect = {
+    id: true,
+    date: true,
+    time: true,
+    type: true,
+    createdAt: true,
+    status: true,
+    price: true,
+    doctor: {
+      select: {
+        id: true,
+        user: {
+          select: {
+            name: true,
+            profileImage: true,
+          },
+        },
+      },
+    },
+  };
+
   const result = await paginate({
     model: prisma.appointment,
     page,
     limit,
     where,
+    select,
+    sortBy,
+    sortOrder,
   });
 
-  return result;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const transformData = result.data.map((appointment: any) => {
+    const { doctor, ...rest } = appointment;
+
+    return {
+      ...rest,
+      doctor: {
+        id: doctor.id,
+        name: doctor.user.name,
+        profileImage: doctor.user.profileImage,
+      },
+    };
+  });
+
+  return { pagination: result.pagination, data: transformData };
+};
+
+const getAppointmentDetails = async (appointmentId: string) => {
+  const appointment = await prisma.appointment.findUnique({
+    where: { id: appointmentId },
+    select: {
+      id: true,
+      date: true,
+      time: true,
+      type: true,
+      notes: true,
+      isPaid: true,
+      price: true,
+      status: true,
+      doctor: {
+        select: {
+          id: true,
+          specialization: true,
+          user: {
+            select: {
+              name: true,
+              profileImage: true,
+              address: true,
+              email: true,
+            },
+          },
+        },
+      },
+      patient: {
+        select: {
+          id: true,
+          allergies: true,
+          bloodGroup: true,
+          medicalHistory: true,
+          emergencyContact: true,
+          user: {
+            select: {
+              name: true,
+              profileImage: true,
+              email: true,
+              dateOfBirth: true,
+              gender: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!appointment) {
+    throw new AppError(400, "Invalid appointment ID");
+  }
+
+  const { patient, doctor, ...rest } = appointment;
+
+  const transformData = {
+    ...rest,
+    doctor: {
+      id: doctor.id,
+      specialization: doctor.specialization,
+      name: doctor.user.name,
+      email: doctor.user.email,
+      address: doctor.user.address,
+      profileImage: doctor.user.profileImage,
+    },
+    patient: {
+      id: patient.id,
+      bloodGroup: patient.bloodGroup,
+      emergencyContact: patient.emergencyContact,
+      medicalHistory: patient.medicalHistory,
+      allergies: patient.allergies,
+      name: patient.user.name,
+      email: patient.user.email,
+      dateOfBirth: patient.user.dateOfBirth,
+      gender: patient.user.gender,
+      profileImage: patient.user.profileImage,
+    },
+  };
+
+  return transformData;
 };
 
 const rescheduleAppointment = async (data: IRescheduleAppointment) => {
@@ -361,10 +499,27 @@ const deleteAppointment = async (appointmentId: string) => {
   return null;
 };
 
+const getDoctorAvailableSlots = async (doctorId: string) => {
+  const result = [
+    "09:00 AM",
+    "09:30 AM",
+    "10:00 AM",
+    "10:30 AM",
+    "11:00 AM",
+    "11:30 AM",
+    "12:00 PM",
+    "12:30 PM",
+  ];
+
+  return result;
+};
+
 export const appointmentService = {
   createAppointment,
   getAppointments,
+  getAppointmentDetails,
   rescheduleAppointment,
   cancelAppointment,
   deleteAppointment,
+  getDoctorAvailableSlots,
 };

@@ -50,32 +50,6 @@ const updateAdminProfile = z.object({
   body: updateProfileSchema,
 });
 
-const commonQuerySchema = z.object({
-  search: z.string().optional(),
-  page: z.string().optional(),
-  limit: z.string().optional(),
-  sortBy: z.string().optional(),
-  sortOrder: z.enum(["asc", "desc"]).optional(),
-});
-
-export const getUsersQuerySchema = z.object({
-  query: commonQuerySchema.extend({
-    role: z.enum(["PATIENT", "DOCTOR", "ADMIN"]).optional(),
-    isActive: z.boolean().optional(),
-    departmentId: z.string().uuid("Invalid department ID").optional(),
-    specialization: z.string().optional(),
-  }),
-});
-
-export const getDoctorsQuery = z.object({
-  query: commonQuerySchema.extend({
-    isAvailable: z.boolean().optional(),
-    rating: z.string().optional(),
-    departmentId: z.string().uuid("Invalid department ID").optional(),
-    specialization: z.string().optional(),
-  }),
-});
-
 export const getDoctorParams = z.object({
   params: z.object({
     id: z
@@ -88,7 +62,5 @@ export const userSchemaValidation = {
   updatePatientProfile,
   updateDoctorProfile,
   updateAdminProfile,
-  getUsersQuerySchema,
-  getDoctorsQuery,
   getDoctorParams,
 };

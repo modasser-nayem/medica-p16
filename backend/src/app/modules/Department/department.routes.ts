@@ -21,7 +21,12 @@ router.get("/", departmentController.getAllDepartments);
 router.get("/:id", departmentController.getDepartmentById);
 
 // Update department by ID
-router.put("/:id", authorize("ADMIN"), departmentController.updateDepartment);
+router.put(
+  "/:id",
+  authorize("ADMIN"),
+  requestValidate(departmentSchemaValidation.updateDepartment),
+  departmentController.updateDepartment,
+);
 
 // Delete department by ID
 router.delete(

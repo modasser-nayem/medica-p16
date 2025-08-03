@@ -1,3 +1,5 @@
+import { PaginationQuery } from "../../types/pagination";
+
 export type TCreateDepartment = {
   name: string;
   description?: string;
@@ -8,11 +10,7 @@ export type TUpdateDepartment = {
   data: Partial<TCreateDepartment> & { isActive?: boolean };
 };
 
-export type TGetDepartmentsFilter = {
-  page?: number;
-  limit?: number;
+export interface TGetDepartmentsFilter extends PaginationQuery {
   search?: string;
-  sortBy?: string;
-  sortOrder?: "asc" | "desc";
-  isActive?: string;
-};
+  active?: "yes" | "no";
+}

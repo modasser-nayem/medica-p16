@@ -62,19 +62,6 @@ const updateAdminProfile = async (req: Request, res: Response) => {
 };
 
 // Get Users
-const getUsers = async (req: Request, res: Response) => {
-  const result = await userService.getUsers(req.query);
-
-  sendResponse(res, {
-    statusCode: 200,
-    success: true,
-    message: "Successfully retrieved users",
-    data: result.data,
-    pagination: result.pagination,
-  });
-};
-
-// Get Users
 const getDoctors = async (req: Request, res: Response) => {
   const result = await userService.getDoctors(req.query);
 
@@ -87,15 +74,28 @@ const getDoctors = async (req: Request, res: Response) => {
   });
 };
 
-// Get Doctor By ID
-const getDoctorById = async (req: Request, res: Response) => {
-  const result = await userService.getDoctorById(req.params.id);
+// Get Doctor Details for patient
+const getDoctorDetails = async (req: Request, res: Response) => {
+  const result = await userService.getDoctorDetails(req.params.id);
 
   sendResponse(res, {
     statusCode: 200,
     success: true,
-    message: "Successfully retrieved doctor",
+    message: "Successfully retrieved doctor details",
     data: result,
+  });
+};
+
+// Get Users
+const getUsers = async (req: Request, res: Response) => {
+  const result = await userService.getUsers(req.query);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Successfully retrieved users",
+    data: result.data,
+    pagination: result.pagination,
   });
 };
 
@@ -123,55 +123,14 @@ const deleteUser = async (req: Request, res: Response) => {
   });
 };
 
-// Get User Stats
-const getUserStats = async (req: Request, res: Response) => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const result = await userService.getUserStats(req.query as any);
-
-  sendResponse(res, {
-    statusCode: 200,
-    success: true,
-    message: "Successfully retrieved user stats",
-    data: result,
-  });
-};
-
-// Get User Activity
-const getUserActivity = async (req: Request, res: Response) => {
-  const result = await userService.getUserActivity(req.query);
-
-  sendResponse(res, {
-    statusCode: 200,
-    success: true,
-    message: "Successfully retrieved user activity",
-    data: result.data,
-    pagination: result.pagination,
-  });
-};
-
-// Get User Dashboard,
-const getUserDashboard = async (req: Request, res: Response) => {
-  const result = await userService.getUserDashboard(req.user.userId);
-
-  sendResponse(res, {
-    statusCode: 200,
-    success: true,
-    message: "Successfully retrieved user dashboard",
-    data: result,
-  });
-};
-
 export const userController = {
   getUserProfile,
   updatePatientProfile,
   updateDoctorProfile,
   updateAdminProfile,
-  getUsers,
   getDoctors,
-  getDoctorById,
+  getDoctorDetails,
+  getUsers,
   updateUserStatus,
   deleteUser,
-  getUserStats,
-  getUserActivity,
-  getUserDashboard,
 };

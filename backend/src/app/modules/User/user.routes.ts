@@ -6,12 +6,16 @@ import { userSchemaValidation } from "./user.validation";
 
 const router = Router();
 
+// ========================================
+//                User Routes
+// ========================================
+
 // Get user profile
-router.get("/profile", authorize(), userController.getUserProfile);
+router.get("/users/profile", authorize(), userController.getUserProfile);
 
 // Update Patient Profile
 router.patch(
-  "/profile/patient",
+  "/users/profile/patient",
   authorize("PATIENT"),
   requestValidate(userSchemaValidation.updatePatientProfile),
   userController.updatePatientProfile,
@@ -19,7 +23,7 @@ router.patch(
 
 // Update Doctor Profile
 router.patch(
-  "/profile/doctor",
+  "/users/profile/doctor",
   authorize("DOCTOR"),
   requestValidate(userSchemaValidation.updateDoctorProfile),
   userController.updateDoctorProfile,
@@ -27,51 +31,29 @@ router.patch(
 
 // Update Admin Profile
 router.patch(
-  "/profile/admin",
+  "/users/profile/admin",
   authorize("ADMIN"),
   requestValidate(userSchemaValidation.updateAdminProfile),
   userController.updateAdminProfile,
 );
 
-// Get Users
-router.get(
-  "/",
-  authorize("ADMIN"),
-  requestValidate(userSchemaValidation.getUsersQuerySchema),
-  userController.getUsers,
-);
-
 // Get Doctors
-router.get(
-  "/doctors",
-  requestValidate(userSchemaValidation.getDoctorsQuery),
-  userController.getDoctors,
-);
+router.get("/users/doctors", userController.getDoctors);
 
 // Get Doctor Details
-router.get(
-  "/doctors/:id",
-  requestValidate(userSchemaValidation.getDoctorParams),
-  userController.getDoctorById,
-);
+router.get("/users/doctors/:id", userController.getDoctorDetails);
+
+// Get Users For admin
+router.get("/users", authorize("ADMIN"), userController.getUsers);
 
 // Update User Status
 router.patch(
-  "/status/:id",
+  "/users/status/:id",
   authorize("ADMIN"),
   userController.updateUserStatus,
 );
 
 // Delete User
-router.delete("/:id", authorize("ADMIN"), userController.deleteUser);
-
-// Get User Stats
-router.get("/stats", authorize(), userController.getUserStats);
-
-// Get User Activity
-router.get("/activity", authorize(), userController.getUserActivity);
-
-// Get User Dashboard,
-router.get("/dashboard", authorize(), userController.getUserDashboard);
+router.delete("/users/:id", authorize("ADMIN"), userController.deleteUser);
 
 export const userRoutes = router;

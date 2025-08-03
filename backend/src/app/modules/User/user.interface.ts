@@ -1,5 +1,7 @@
 import { z } from "zod";
 import { userSchemaValidation } from "./user.validation";
+import { PaginationQuery } from "../../types/pagination";
+import { TUserRole } from "../../types/global";
 
 export type TUpdatePatientProfile = z.infer<
   typeof userSchemaValidation.updatePatientProfile
@@ -13,71 +15,18 @@ export type TUpdateAdminProfile = z.infer<
   typeof userSchemaValidation.updateAdminProfile
 >["body"];
 
-export type TGetUsersFilter = z.infer<
-  typeof userSchemaValidation.getUsersQuerySchema
->["query"];
-
-export type TGetDoctorsFilter = z.infer<
-  typeof userSchemaValidation.getDoctorsQuery
->["query"];
-
-export interface IUserStats {
-  total: number;
-  byRole: Record<string, number>;
-  active: number;
-  online: number;
-  newThisMonth: number;
-  newThisWeek: number;
+export interface TGetUsersFilter extends PaginationQuery {
+  search?: string;
+  active?: "yes" | "no";
+  role?: TUserRole;
 }
 
-export interface IUserActivityLog {
-  id: string;
-  userId: string;
-  user?: {
-    id: string;
-    name: string;
-    email: string;
-  };
-  action: string;
-  entity: string;
-  entityId?: string;
-  details?: any;
-  ipAddress?: string;
-  userAgent?: string;
-  createdAt: Date;
-}
-
-export interface IGetUserActivityFilters {
-  userId?: string;
-  action?: string;
-  entity?: string;
-  startDate?: string;
-  endDate?: string;
-  page?: number;
-  limit?: number;
-  sortBy?: string;
-  sortOrder?: "asc" | "desc";
-}
-
-export interface IUserDashboard {
-  user: IUserProfileWithDetails;
-  stats: {
-    totalAppointments?: number;
-    completedAppointments?: number;
-    pendingAppointments?: number;
-    totalConsultations?: number;
-    totalPrescriptions?: number;
-    totalLabTests?: number;
-    totalPayments?: number;
-    totalNotifications?: number;
-  };
-  recentActivity: IUserActivityLog[];
-}
-
-export interface IUserStatus {
-  userId: string;
-  status: "ONLINE" | "OFFLINE" | "AWAY" | "BUSY";
-  lastSeen: Date;
+export interface TGetDoctorsFilter extends PaginationQuery {
+  search?: string;
+  specialty?: string;
+  rating?: number;
+  available?: "yes" | "no";
+  sortBy?: "rating" | "createdAt";
 }
 
 export interface IUserProfile {
