@@ -1,5 +1,6 @@
 import { api } from "@/lib/axios";
 import { ApiResponse, IFilterUsers, User, UserRole } from "@/types";
+import { IDoctor } from "@/types/doctor";
 
 export interface UpdatePatientProfile {
    name?: string;
@@ -76,7 +77,7 @@ export const userService = {
       api.patch<ApiResponse<any>>("/users/profile/admin", { data }),
 
    getDoctors: (filters: GetDoctorFilters) =>
-      api.get<ApiResponse<any>>("/users/doctors", { params: filters }),
+      api.get<ApiResponse<IDoctor[]>>("/users/doctors", { params: filters }),
 
    getDoctorDetails: (doctorId: string) =>
       api.get<ApiResponse<any>>(`/users/doctors/${doctorId}`),

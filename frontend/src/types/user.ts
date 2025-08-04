@@ -119,30 +119,3 @@ export interface Permission {
    resource: string;
    action: string;
 }
-
-export interface LoginCredentials {
-   email: string;
-   password: string;
-}
-
-export interface RegisterData {
-   email: string;
-   password: string;
-   firstName: string;
-   lastName: string;
-   role: UserRole;
-   phone?: string;
-   dateOfBirth?: string;
-   gender?: "male" | "female" | "other";
-}
-
-export interface ResetPassword {
-   token: string;
-   newPassword: string;
-   confirmPassword: string;
-}
-export interface ChangePassword {
-   currentPassword: string;
-   newPassword: string;
-   confirmPassword: string;
-}

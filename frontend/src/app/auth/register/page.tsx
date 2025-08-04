@@ -245,7 +245,7 @@ const RegisterPage = () => {
                                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                                  <Input
                                     id="experience"
-                                    type="experience"
+                                    type="number"
                                     placeholder="Enter your experience"
                                     className="pl-10"
                                     {...register("experience")}
@@ -406,7 +406,7 @@ const RegisterPage = () => {
                   </form>
 
                   <div className="mt-6 text-center">
-                     <p className="text-sm text-gray-600">
+                     <p className="text-sm text-gray-600 mb-5">
                         Already have an account?{" "}
                         <Link
                            href="/auth/login"
@@ -415,6 +415,12 @@ const RegisterPage = () => {
                            Sign in here
                         </Link>
                      </p>
+                     <Link
+                        href="/"
+                        className="py-2 px-3 rounded-md bg-primary-600 hover:bg-primary-700 text-white text-sm"
+                     >
+                        Go Back
+                     </Link>
                   </div>
                </CardContent>
             </Card>

@@ -33,7 +33,7 @@ const DashboardPage = () => {
       }
    };
 
-   return <div className="p-6">{renderDashboard()}</div>;
+   return <div>{renderDashboard()}</div>;
 };
 
 export default DashboardPage;
