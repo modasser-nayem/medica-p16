@@ -193,7 +193,7 @@ const LoginPage = () => {
                   )}
 
                   <div className="mt-6 text-center">
-                     <p className="text-sm text-gray-600">
+                     <p className="text-sm text-gray-600 mb-5">
                         Don't have an account?{" "}
                         <Link
                            href="/auth/register"
@@ -202,6 +202,12 @@ const LoginPage = () => {
                            Sign up
                         </Link>
                      </p>
+                     <Link
+                        href="/"
+                        className="py-2 px-3 rounded-md bg-primary-600 hover:bg-primary-700 text-white text-sm"
+                     >
+                        Go Back
+                     </Link>
                   </div>
                </CardContent>
             </Card>

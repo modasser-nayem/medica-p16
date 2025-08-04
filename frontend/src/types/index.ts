@@ -1,5 +1,6 @@
 import { User } from "./user";
 
+export * from "./auth";
 export * from "./user";
 export * from "./appointment";
 export * from "./analytics";
@@ -47,4 +48,11 @@ export interface AuditLog {
    ipAddress: string;
    userAgent: string;
    createdAt: string;
+}
+
+export interface PaginationQuery {
+   page?: number;
+   limit?: number;
+   sortBy?: string;
+   sortOrder?: "asc" | "desc";
 }

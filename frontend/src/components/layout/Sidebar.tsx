@@ -15,6 +15,7 @@ import {
    Shield,
    LayoutDashboard,
    Hospital,
+   DollarSign,
 } from "lucide-react";
 
 const Sidebar: React.FC = () => {
@@ -24,7 +25,7 @@ const Sidebar: React.FC = () => {
    const getNavigationItems = (role: UserRole) => {
       const items = [
          { name: "Home", href: "/", icon: Home },
-         { name: "Profile", href: "/profile", icon: User },
+         { name: "Profile", href: "/dashboard/profile", icon: User },
       ];
 
       switch (role) {
@@ -32,14 +33,26 @@ const Sidebar: React.FC = () => {
             return [
                ...items,
                { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-               { name: "Appointments", href: "/appointments", icon: Calendar },
+               {
+                  name: "Appointments",
+                  href: "/dashboard/appointments",
+                  icon: Calendar,
+               },
             ];
          case "DOCTOR":
             return [
                ...items,
                { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-               { name: "Patients", href: "/patients", icon: Users },
-               { name: "Appointments", href: "/appointments", icon: Calendar },
+               {
+                  name: "Appointments",
+                  href: "/dashboard/appointments",
+                  icon: Calendar,
+               },
+               {
+                  name: "Fees",
+                  href: "/dashboard/consultation-fees",
+                  icon: DollarSign,
+               },
             ];
          case "ADMIN":
             return [
@@ -55,7 +68,7 @@ const Sidebar: React.FC = () => {
                   href: "/dashboard/admin/department",
                   icon: Hospital,
                },
-               { name: "Settings", href: "/", icon: Settings },
+               { name: "Settings", href: "/dashboard", icon: Settings },
             ];
          default:
             return [...items];
