@@ -2,7 +2,12 @@ import { useCallback, useState } from "react";
 import { toast } from "react-hot-toast";
 import { AxiosError, AxiosResponse } from "axios";
 import { UseFormSetError, FieldValues, Path } from "react-hook-form";
-import { ApiErrorResponse, ApiFieldError, ApiResponse } from "@/types";
+import {
+   ApiErrorResponse,
+   ApiFieldError,
+   ApiResponse,
+   PaginationResult,
+} from "@/types";
 
 interface UseApiOptions<T extends FieldValues = any> {
    showSuccessToast?: boolean;
@@ -14,7 +19,7 @@ interface UseApiOptions<T extends FieldValues = any> {
 
 interface UseApiReturn<T> {
    data: T | null;
-   pagination?: any;
+   pagination?: PaginationResult;
    loading: boolean;
    error: string | null;
    execute: (...args: any[]) => Promise<T | null>;

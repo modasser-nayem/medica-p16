@@ -6,16 +6,18 @@ export * from "./appointment";
 export * from "./analytics";
 export * from "./department";
 
+export interface PaginationResult {
+   page: number;
+   limit: number;
+   total: number;
+   totalPages: number;
+}
+
 export interface ApiResponse<T> {
    success: boolean;
    message: string;
    data: T;
-   pagination?: {
-      page: number;
-      limit: number;
-      total: number;
-      totalPages: number;
-   };
+   pagination?: PaginationResult;
 }
 
 export interface ApiFieldError {

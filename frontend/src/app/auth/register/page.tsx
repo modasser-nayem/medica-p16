@@ -17,7 +17,7 @@ import {
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import { authService } from "@/services";
-import { ROUTES, USER_ROLES, GENDER_OPTIONS } from "@/constant";
+import { USER_ROLES, GENDER_OPTIONS, ROUTES } from "@/constant";
 import Link from "next/link";
 import { handleApiError } from "@/utils/handleApiError";
 
@@ -32,7 +32,7 @@ const registerSchema = z
       dateOfBirth: z
          .string({ required_error: "Date of Birth is Required" })
          .datetime(),
-      gender: z.enum(["male", "female", "other"]),
+      gender: z.enum(["MALE", "FEMALE", "OTHER"]),
       address: z.string().optional(),
 
       // Doctor-only fields (initially optional)
@@ -123,6 +123,7 @@ const RegisterPage = () => {
       resolver: zodResolver(registerSchema),
       defaultValues: {
          role: "PATIENT",
+         departmentId: "af52df0f-4044-46be-af31-4fae996ef3ed", // 5b44bdf9-a2f8-43c2-8427-3b93a74462be
       },
    });
 
@@ -138,7 +139,7 @@ const RegisterPage = () => {
 
          if (response.success) {
             toast.success(response.message || "Registration successful");
-            // router.push(ROUTES.DASHBOARD);
+            router.push(ROUTES.DASHBOARD);
          }
       } catch (error) {
          handleApiError(error, setError);
@@ -146,6 +147,8 @@ const RegisterPage = () => {
          setIsLoading(false);
       }
    };
+
+   console.log(errors);
 
    return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
@@ -233,7 +236,50 @@ const RegisterPage = () => {
 
                      {/* Role Based Filed */}
                      {selectedRole && selectedRole === "DOCTOR" ? (
-                        <div>
+                        <div className="space-y-4">
+                           {/* Department Id */}
+                           {/* <div>
+                              <label
+                                 htmlFor="departmentId"
+                                 className="block text-sm font-medium text-gray-700 mb-1"
+                              >
+                                 Department
+                              </label>
+                              <div className="relative">
+                                 <User className="absolute left-3 top-3 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                 <Input
+                                    id="departmentId"
+                                    type="text"
+                                    placeholder="Enter Department"
+                                    className="pl-10"
+                                    {...register("departmentId")}
+                                    error={errors.departmentId?.message}
+                                 />
+                              </div>
+                           </div> */}
+
+                           {/* Specialization */}
+                           <div>
+                              <label
+                                 htmlFor="specialization"
+                                 className="block text-sm font-medium text-gray-700 mb-1"
+                              >
+                                 Specialization
+                              </label>
+                              <div className="relative">
+                                 <User className="absolute left-3 top-3 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                 <Input
+                                    id="specialization"
+                                    type="text"
+                                    placeholder="Enter specialization"
+                                    className="pl-10"
+                                    {...register("specialization")}
+                                    error={errors.specialization?.message}
+                                 />
+                              </div>
+                           </div>
+
+                           {/* Experience */}
                            <div>
                               <label
                                  htmlFor="experience"
@@ -242,14 +288,61 @@ const RegisterPage = () => {
                                  Experience
                               </label>
                               <div className="relative">
-                                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                 <Mail className="absolute left-3 top-3 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                                  <Input
                                     id="experience"
                                     type="number"
                                     placeholder="Enter your experience"
                                     className="pl-10"
-                                    {...register("experience")}
+                                    {...register("experience", {
+                                       setValueAs: (value) =>
+                                          value === ""
+                                             ? undefined
+                                             : Number(value),
+                                    })}
                                     error={errors.experience?.message}
+                                 />
+                              </div>
+                           </div>
+
+                           {/* Qualification */}
+                           <div>
+                              <label
+                                 htmlFor="qualifications"
+                                 className="block text-sm font-medium text-gray-700 mb-1"
+                              >
+                                 Qualifications
+                              </label>
+                              <div className="relative">
+                                 <User className="absolute left-3 top-3 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                 <Input
+                                    id="qualifications"
+                                    type="text"
+                                    placeholder="Enter Qualifications"
+                                    className="pl-10"
+                                    {...register("qualifications")}
+                                    error={errors.qualifications?.message}
+                                 />
+                              </div>
+                           </div>
+
+                           {/* License Number */}
+                           <div>
+                              <label
+                                 htmlFor="licenseNumber"
+                                 className="block text-sm font-medium text-gray-700 mb-1"
+                              >
+                                 License Number
+                              </label>
+                              <div className="relative">
+                                 <User className="absolute left-3 top-3 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                 <Input
+                                    id="licenseNumber"
+                                    type="text"
+                                    placeholder="Enter License Number"
+                                    className="pl-10"
+                                    {...register("licenseNumber")}
+                                    error={errors.licenseNumber?.message}
                                  />
                               </div>
                            </div>
