@@ -1,9 +1,9 @@
-import { Request, Response } from "express";
+import { asyncHandler } from "../../utils/asyncHandler";
 import sendResponse from "../../utils/sendResponse";
 import { analyticsService } from "./analytics.service";
 
 // Get Admin Stats
-const getAdminStats = async (req: Request, res: Response) => {
+const getAdminStats = asyncHandler(async (req, res) => {
   const result = await analyticsService.getAdminStats();
 
   sendResponse(res, {
@@ -12,10 +12,10 @@ const getAdminStats = async (req: Request, res: Response) => {
     message: "Successfully Retrieved Admin Stats",
     data: result,
   });
-};
+});
 
 // Get Doctor Stats
-const getDoctorStats = async (req: Request, res: Response) => {
+const getDoctorStats = asyncHandler(async (req, res) => {
   const result = await analyticsService.getDoctorStats(req.user.userId);
 
   sendResponse(res, {
@@ -24,10 +24,10 @@ const getDoctorStats = async (req: Request, res: Response) => {
     message: "Successfully Retrieved Doctor Stats",
     data: result,
   });
-};
+});
 
 // Get Patient Stats
-const getPatientStats = async (req: Request, res: Response) => {
+const getPatientStats = asyncHandler(async (req, res) => {
   const result = await analyticsService.getPatientStats(req.user.userId);
 
   sendResponse(res, {
@@ -36,10 +36,10 @@ const getPatientStats = async (req: Request, res: Response) => {
     message: "Successfully Retrieved Patient Stats",
     data: result,
   });
-};
+});
 
 // Get Public Stats
-const getPublicStats = async (req: Request, res: Response) => {
+const getPublicStats = asyncHandler(async (req, res) => {
   const result = await analyticsService.getPublicStats();
 
   sendResponse(res, {
@@ -48,10 +48,10 @@ const getPublicStats = async (req: Request, res: Response) => {
     message: "Successfully Retrieved Public Stats",
     data: result,
   });
-};
+});
 
 // Get User Activity
-const getUserActivity = async (req: Request, res: Response) => {
+const getUserActivity = asyncHandler(async (req, res) => {
   const result = await analyticsService.getUserActivity(req.query);
 
   sendResponse(res, {
@@ -60,7 +60,7 @@ const getUserActivity = async (req: Request, res: Response) => {
     message: "Successfully Retrieved User Activity",
     data: result,
   });
-};
+});
 
 export const analyticsController = {
   getAdminStats,

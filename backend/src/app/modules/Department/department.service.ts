@@ -25,36 +25,8 @@ const createDepartment = async (data: TCreateDepartment) => {
   return result;
 };
 
-const getAllDepartments = async (filters: TGetDepartmentsFilter) => {
-  const {
-    page = 1,
-    limit = 10,
-    sortBy = "createdAt",
-    sortOrder = "desc",
-    active,
-    search,
-  } = filters;
-
-  const where: Prisma.DepartmentWhereInput = {};
-
-  if (active) {
-    if (active === "yes" || active === "no") {
-      where.isActive = active === "yes" ? true : false;
-    }
-  }
-
-  if (search) {
-    where.name = { contains: search, mode: "insensitive" };
-  }
-
-  const result = await paginate({
-    model: prisma.department,
-    page,
-    limit,
-    where,
-    sortBy,
-    sortOrder,
-  });
+const getAllDepartments = async () => {
+  const result = await prisma.department.findMany();
 
   return result;
 };
@@ -97,7 +69,7 @@ const deleteDepartment = async (id: string) => {
 
   const result = await prisma.department.update({
     where: { id },
-    data: { isActive: false },
+    data: { isDeleted: true },
   });
 
   return result;

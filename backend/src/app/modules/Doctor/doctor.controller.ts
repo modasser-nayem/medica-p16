@@ -2,62 +2,83 @@ import { asyncHandler } from "../../utils/asyncHandler";
 import sendResponse from "../../utils/sendResponse";
 import { doctorService } from "./doctor.service";
 
-const createSchedule = asyncHandler(async (req, res) => {
-  const result = await doctorService.createSchedule({
-    doctorId: req.params.doctorId,
-    data: req.body,
-  });
-
-  sendResponse(res, {
-    success: true,
-    statusCode: 201,
-    message: "Schedule created successfully",
-    data: result,
-  });
-});
-
-const getSchedules = asyncHandler(async (req, res) => {
-  const result = await doctorService.getSchedules(req.params.doctorId);
+// Get Doctors
+const getDoctors = asyncHandler(async (req, res) => {
+  const result = await doctorService.getDoctors(req.query);
 
   sendResponse(res, {
     statusCode: 200,
     success: true,
-    message: "Schedules retrieved successfully",
+    message: "Successfully retrieved doctors",
+    data: result.data,
+    pagination: result.pagination,
+  });
+});
+
+// Get Doctor Details
+const getDoctorDetails = asyncHandler(async (req, res) => {
+  const result = await doctorService.getDoctorDetails(req.params.id);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Successfully retrieved doctor details",
     data: result,
   });
 });
 
-const updateSchedule = asyncHandler(async (req, res) => {
-  const result = await doctorService.updateSchedule(
-    req.params.doctorId,
-    req.params.id,
+const getDoctorSlots = asyncHandler(async (req, res) => {
+  const result = await doctorService.getDoctorAvailableSlots(req.params.id);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: 200,
+    message: "Successfully Retrieved Doctor Slots",
+    data: result,
+  });
+});
+
+const createOrUpdateConsultationFees = asyncHandler(async (req, res) => {
+  const result = await doctorService.createOrUpdateConsultationFees(
+    req.user.profileId!,
     req.body,
   );
 
   sendResponse(res, {
     statusCode: 200,
     success: true,
-    message: "Schedule updated successfully",
+    message: "Successfully create or update consultation fees",
     data: result,
   });
 });
 
-const deleteSchedule = asyncHandler(async (req, res) => {
-  const result = await doctorService.deleteSchedule(
-    req.params.doctorId,
-    req.params.id,
-  );
+const getConsultationFees = asyncHandler(async (req, res) => {
+  const result = await doctorService.getConsultationFees(req.params.doctorId);
+
   sendResponse(res, {
     statusCode: 200,
     success: true,
-    message: "Schedule deleted successfully",
+    message: "Successfully retrieved consultation fees",
+    data: result,
+  });
+});
+
+const updateFeesActivation = asyncHandler(async (req, res) => {
+  const result = await doctorService.updateFeesActivation(req.params.id);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Consultation Fees Successfully Updated",
     data: result,
   });
 });
 
 export const doctorController = {
-  createSchedule,
-  getSchedules,
-  updateSchedule,
-  deleteSchedule,
+  getDoctors,
+  getDoctorDetails,
+  getDoctorSlots,
+  createOrUpdateConsultationFees,
+  getConsultationFees,
+  updateFeesActivation,
 };

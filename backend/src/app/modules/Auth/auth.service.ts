@@ -4,36 +4,18 @@ import AppError from "../../errors/AppError";
 import { emailHelper } from "../../utils/email";
 import passwordHelper from "../../utils/hash";
 import jwtHelper from "../../utils/jwt";
+import { logUserActivity } from "../../utils/logActivity";
 import {
-  TAdminRegistration,
+  TUserRegistration,
   TChangePassword,
-  TDoctorRegistration,
   TForgotPassword,
-  TLoginResponse,
-  TPatentRegistration,
   TRefreshToken,
   TResetPassword,
   TUserLogin,
+  TAuthUser,
 } from "./auth.interface";
 
-// User Activity Logging
-const logUserActivity = async (
-  userId: string,
-  action: string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  details: any,
-) => {
-  await prisma.auditLog.create({
-    data: {
-      userId,
-      action,
-      entity: "USER",
-      details,
-    },
-  });
-};
-
-const registerPatient = async (data: TPatentRegistration) => {
+const registerUser = async (data: TUserRegistration) => {
   // Check if user already exists
   const existUser = await prisma.user.findUnique({
     where: { email: data.email },
@@ -46,160 +28,56 @@ const registerPatient = async (data: TPatentRegistration) => {
   // Hashed Password
   data.password = await passwordHelper.hashPassword(data.password);
 
-  const result = prisma.$transaction(async (tran) => {
+  await prisma.$transaction(async (tran) => {
     const { confirmPassword, ...userData } = data;
 
     const user = await tran.user.create({
-      data: { ...userData, role: "PATIENT" },
+      data: userData,
     });
 
-    await tran.patient.create({
-      data: {
-        userId: user.id,
-        bloodGroup: userData.bloodGroup,
-        emergencyContact: userData.emergencyContact,
-        medicalHistory: userData.medicalHistory,
-        allergies: userData.allergies,
-      },
-    });
+    if (userData.role === "PATIENT") {
+      await tran.patient.create({
+        data: {
+          userId: user.id,
+        },
+      });
+    }
 
-    return {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      isActive: user.isActive,
-    };
+    if (userData.role === "DOCTOR") {
+      await tran.doctor.create({
+        data: {
+          userId: user.id,
+        },
+      });
+    }
+
+    return user;
   });
 
-  return result;
-};
-
-const registerDoctor = async (data: TDoctorRegistration) => {
-  // Check if user already exists
-  const existUser = await prisma.user.findUnique({
-    where: { email: data.email },
-  });
-
-  if (existUser) {
-    throw new AppError(400, "User with this email already exists");
-  }
-
-  // Check if license number already exists
-  const existDoctorLicense = await prisma.doctor.findUnique({
-    where: { licenseNumber: data.licenseNumber },
-  });
-
-  if (existDoctorLicense) {
-    throw new AppError(400, "Doctor with this license number already exists");
-  }
-
-  // Check department exist or not
-  const existDepartment = await prisma.department.findUnique({
-    where: { id: data.departmentId },
-  });
-
-  if (!existDepartment) {
-    throw new AppError(400, "Invalid department ID");
-  }
-
-  // Hashed Password
-  data.password = await passwordHelper.hashPassword(data.password);
-
-  const result = prisma.$transaction(async (tran) => {
-    const { confirmPassword, ...userData } = data;
-
-    const user = await tran.user.create({
-      data: {
-        name: userData.name,
-        email: userData.email,
-        password: userData.password,
-        dateOfBirth: userData.dateOfBirth,
-        gender: userData.gender,
-        phone: userData.phone,
-        address: userData.address,
-        role: "DOCTOR",
-      },
-    });
-
-    await tran.doctor.create({
-      data: {
-        userId: user.id,
-        departmentId: userData.departmentId,
-        specialization: userData.specialization,
-        qualifications: userData.qualifications,
-        experience: userData.experience,
-        licenseNumber: userData.licenseNumber,
-      },
-    });
-
-    return {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      isActive: user.isActive,
-    };
-  });
-
-  return result;
-};
-
-const registerAdmin = async (data: TAdminRegistration) => {
-  // Check if user already exists
-  const existUser = await prisma.user.findUnique({
-    where: { email: data.email },
-  });
-
-  if (existUser) {
-    throw new AppError(400, "User with this email already exists");
-  }
-
-  // Hashed Password
-  data.password = await passwordHelper.hashPassword(data.password);
-
-  const result = prisma.$transaction(async (tran) => {
-    const { confirmPassword, ...userData } = data;
-
-    const user = await tran.user.create({
-      data: { ...userData, role: "ADMIN" },
-    });
-
-    await tran.admin.create({
-      data: {
-        userId: user.id,
-      },
-    });
-
-    return {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      isActive: user.isActive,
-    };
-  });
-
-  return result;
+  return null;
 };
 
 const loginUser = async (payload: {
   data: TUserLogin;
   userAgent: string;
   ipAddress: string;
-}): Promise<TLoginResponse> => {
+}) => {
   const user = await prisma.user.findUnique({
     where: { email: payload.data.email },
+    include: {
+      patientProfile: { select: { id: true } },
+      doctorProfile: { select: { id: true } },
+    },
   });
 
   if (!user) {
-    throw new AppError(401, "Invalid email address");
+    throw new AppError(400, "Invalid email address");
   }
 
   // Check if user is active
-  if (!user.isActive) {
+  if (!user.isActive || user.isDeleted) {
     throw new AppError(
-      401,
+      400,
       "Account is deactivated. Please contact administrator.",
     );
   }
@@ -210,36 +88,51 @@ const loginUser = async (payload: {
     user.password,
   );
   if (!isPasswordValid) {
-    throw new AppError(401, "Incorrect password!");
+    throw new AppError(400, "Incorrect password!");
+  }
+
+  if (user.role !== "ADMIN" && !user.patientProfile && !user.doctorProfile) {
+    throw new AppError(404, "Profile not found! contact in support");
   }
 
   // Generate tokens
   const accessToken = jwtHelper.signAccessToken({
     userId: user.id,
     role: user.role,
+    profileId:
+      user.role === "DOCTOR" ? user.doctorProfile?.id : user.patientProfile?.id,
   });
   const refreshToken = jwtHelper.signRefreshToken({
     userId: user.id,
     role: user.role,
+    profileId:
+      user.role === "DOCTOR" ? user.doctorProfile?.id : user.patientProfile?.id,
   });
 
   // Log user activity
-  await logUserActivity(user.id, "LOGIN", {
+  await logUserActivity({
+    userId: user.id,
+    action: "LOGIN_USER",
     ipAddress: payload.ipAddress,
     userAgent: payload.userAgent,
   });
 
+  const authUser: TAuthUser = {
+    id: user.id,
+    name: user.name,
+    role: user.role,
+    profileImage: user.profileImage,
+    profileId: user.patientProfile
+      ? user.patientProfile.id
+      : user.doctorProfile
+        ? user.doctorProfile.id
+        : undefined,
+  };
+
   return {
-    user: {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      profileImage: user.profileImage,
-      role: user.role,
-      isActive: user.isActive,
-    },
     accessToken,
     refreshToken,
+    user: authUser,
   };
 };
 
@@ -252,6 +145,10 @@ const refreshToken = async (data: TRefreshToken) => {
 
   const user = await prisma.user.findUnique({
     where: { id: decodeUser.userId },
+    include: {
+      patientProfile: { select: { id: true } },
+      doctorProfile: { select: { id: true } },
+    },
   });
 
   if (!user) {
@@ -262,9 +159,23 @@ const refreshToken = async (data: TRefreshToken) => {
   const accessToken = jwtHelper.signAccessToken({
     userId: user.id,
     role: user.role,
+    profileId:
+      user.role === "DOCTOR" ? user.doctorProfile?.id : user.patientProfile?.id,
   });
 
-  return { accessToken };
+  const authUser: TAuthUser = {
+    id: user.id,
+    name: user.name,
+    role: user.role,
+    profileImage: user.profileImage,
+    profileId: user.patientProfile
+      ? user.patientProfile.id
+      : user.doctorProfile
+        ? user.doctorProfile.id
+        : undefined,
+  };
+
+  return { accessToken, user: authUser };
 };
 
 const forgotPassword = async (data: TForgotPassword) => {
@@ -321,7 +232,10 @@ const resetPassword = async (data: TResetPassword) => {
   });
 
   // Log activity
-  await logUserActivity(user.id, "PASSWORD_RESET", {});
+  await logUserActivity({
+    userId: user.id,
+    action: "RESET_PASSWORD",
+  });
 
   return null;
 };
@@ -360,18 +274,45 @@ const changePassword = async (payload: {
   });
 
   // Log activity
-  await logUserActivity(userId, "PASSWORD_CHANGE", {});
+  await logUserActivity({ userId, action: "CHANGE_PASSWORD" });
 
   return null;
 };
 
+const getAuthUser = async (payload: { userId: string }): Promise<TAuthUser> => {
+  const user = await prisma.user.findUnique({
+    where: { id: payload.userId },
+    select: {
+      id: true,
+      name: true,
+      role: true,
+      profileImage: true,
+      patientProfile: { select: { id: true } },
+      doctorProfile: { select: { id: true } },
+    },
+  });
+
+  if (!user) throw new AppError(404, "User not found!");
+
+  return {
+    id: user.id,
+    name: user.name,
+    role: user.role,
+    profileImage: user.profileImage,
+    profileId: user.patientProfile
+      ? user.patientProfile.id
+      : user.doctorProfile
+        ? user.doctorProfile.id
+        : undefined,
+  };
+};
+
 export const authService = {
-  registerPatient,
-  registerDoctor,
-  registerAdmin,
+  registerUser,
   loginUser,
   refreshToken,
   forgotPassword,
   resetPassword,
   changePassword,
+  getAuthUser,
 };

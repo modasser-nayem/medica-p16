@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export interface IAdminStats {
   totalUsers: number;
   activeUsers: number;
@@ -12,22 +13,14 @@ export interface IDoctorStats {
   completedAppointments: number;
   pendingAppointments: number;
   todaysAppointments: number;
-  upcomingAppointment: {
-    id: string;
-    date: Date;
-    time: Date;
-  } | null;
+  upcomingAppointment: any | null;
 }
 
 export interface IPatientStats {
   completedAppointments: number;
   pendingAppointments: number;
   scheduledAppointments: number;
-  upcomingAppointment: {
-    id: string;
-    date: Date;
-    time: Date;
-  } | null;
+  upcomingAppointment: any | null;
 }
 
 export interface IPublicStats {
@@ -45,8 +38,6 @@ export interface IUserActivityLog {
     email: string;
   };
   action: string;
-  entity: string;
-  entityId?: string;
   details?: any;
   ipAddress?: string;
   userAgent?: string;
@@ -56,7 +47,6 @@ export interface IUserActivityLog {
 export interface IGetUserActivityFilters {
   userId?: string;
   action?: string;
-  entity?: string;
   startDate?: string;
   endDate?: string;
   page?: number;

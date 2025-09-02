@@ -3,30 +3,22 @@ import { userSchemaValidation } from "./user.validation";
 import { PaginationQuery } from "../../types/pagination";
 import { TUserRole } from "../../types/global";
 
+export type TUpdateUserProfile = z.infer<
+  typeof userSchemaValidation.updateUserProfile
+>;
+
 export type TUpdatePatientProfile = z.infer<
   typeof userSchemaValidation.updatePatientProfile
->["body"];
+>;
 
 export type TUpdateDoctorProfile = z.infer<
   typeof userSchemaValidation.updateDoctorProfile
->["body"];
-
-export type TUpdateAdminProfile = z.infer<
-  typeof userSchemaValidation.updateAdminProfile
->["body"];
+>;
 
 export interface TGetUsersFilter extends PaginationQuery {
   search?: string;
   active?: "yes" | "no";
   role?: TUserRole;
-}
-
-export interface TGetDoctorsFilter extends PaginationQuery {
-  search?: string;
-  specialty?: string;
-  rating?: number;
-  available?: "yes" | "no";
-  sortBy?: "rating" | "createdAt";
 }
 
 export interface IUserProfile {

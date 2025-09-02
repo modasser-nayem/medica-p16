@@ -1,25 +1,18 @@
 import { AppointmentStatus } from "@prisma/client";
 import { PaginationQuery } from "../../types/pagination";
+import { appointmentSchemaValidation } from "./appointment.validation";
+import { z } from "zod";
 
-export interface ICreateAppointment {
-  patientId: string;
-  doctorId: string;
-  date: string;
-  time: string;
-  type: "CHAT" | "VOICE" | "VIDEO";
-  notes?: string;
-}
+export type TCreateAppointment = z.infer<
+  typeof appointmentSchemaValidation.createAppointment
+>;
 
-export interface IRescheduleAppointment {
-  appointmentId: string;
-  date: string;
-  time: string;
-  notes?: string;
-}
+export type TRescheduleAppointment = z.infer<
+  typeof appointmentSchemaValidation.rescheduleAppointment
+> & { appointmentId: string };
 
 export interface IGetAppointmentsFilters extends PaginationQuery {
-  date?: string;
-  startDate?: string;
-  endDate?: string;
+  startsAt?: string;
+  endsAt?: string;
   status?: AppointmentStatus;
 }

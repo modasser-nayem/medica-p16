@@ -8,25 +8,25 @@ const router = express.Router();
 
 // Create appointment
 router.post(
-  "/appointments",
+  "/",
   authorize(),
   requestValidate(appointmentSchemaValidation.createAppointment),
   appointmentController.createAppointment,
 );
 
 // Get appointments
-router.get("/appointments", authorize(), appointmentController.getAppointments);
+router.get("/", authorize(), appointmentController.getAppointments);
 
 // Get appointment details
 router.get(
-  "/appointments/:id",
+  "/:id",
   authorize("PATIENT", "DOCTOR"),
   appointmentController.getAppointmentDetails,
 );
 
 // Reschedule appointment
 router.put(
-  "/appointments/:id",
+  "/:id/reschedule",
   authorize(),
   requestValidate(appointmentSchemaValidation.rescheduleAppointment),
   appointmentController.rescheduleAppointment,
@@ -34,23 +34,13 @@ router.put(
 
 // Cancel appointment
 router.patch(
-  "/appointments/:id",
+  "/:id/cancel",
   authorize(),
+  requestValidate(appointmentSchemaValidation.cancelAppointment),
   appointmentController.cancelAppointment,
 );
 
 // Delete appointment
-router.delete(
-  "/appointments/:id",
-  authorize(),
-  appointmentController.deleteAppointment,
-);
-
-// Doctor Available slots
-router.get(
-  "/doctor/available-slots",
-  requestValidate(appointmentSchemaValidation.doctorAvailableSlots),
-  appointmentController.getDoctorAvailableSlots,
-);
+router.delete("/:id", authorize(), appointmentController.deleteAppointment);
 
 export const appointmentRoutes = router;

@@ -20,7 +20,7 @@ class App {
   private config() {
     this.app.use(
       cors({
-        origin: config.NODE_ENV === "development" ? "*" : config.FRONTEND_URL,
+        origin: config.FRONTEND_URL,
         credentials: true,
         methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
         allowedHeaders: ["Content-Type", "Authorization"],

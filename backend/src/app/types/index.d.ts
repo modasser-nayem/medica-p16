@@ -1,10 +1,10 @@
 import { JwtPayload } from "jsonwebtoken";
+import { TSignTokenPayload } from "../utils/jwt";
 
 declare global {
   namespace Express {
     interface Request {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      user?: JwtPayload | string | any;
+      user: JwtPayload & TSignTokenPayload;
     }
   }
 }

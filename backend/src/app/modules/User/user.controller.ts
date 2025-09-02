@@ -1,9 +1,9 @@
-import { Request, Response } from "express";
 import sendResponse from "../../utils/sendResponse";
 import { userService } from "./user.service";
+import { asyncHandler } from "../../utils/asyncHandler";
 
 // Get user profile
-const getUserProfile = async (req: Request, res: Response) => {
+const getUserProfile = asyncHandler(async (req, res) => {
   const result = await userService.getUserProfile(req.user.userId);
 
   sendResponse(res, {
@@ -12,12 +12,25 @@ const getUserProfile = async (req: Request, res: Response) => {
     message: "User profile retrieved successfully",
     data: result,
   });
-};
+});
 
-// Update user general profile
+// Update User Information
+const updateUserInformation = asyncHandler(async (req, res) => {
+  const result = await userService.updateUserInformation({
+    userId: req.user.userId,
+    data: req.body,
+  });
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Profile successfully updated",
+    data: result,
+  });
+});
 
 // Update Patient Profile
-const updatePatientProfile = async (req: Request, res: Response) => {
+const updatePatientProfile = asyncHandler(async (req, res) => {
   const result = await userService.updatePatientProfile({
     userId: req.user.userId,
     data: req.body,
@@ -26,13 +39,13 @@ const updatePatientProfile = async (req: Request, res: Response) => {
   sendResponse(res, {
     statusCode: 200,
     success: true,
-    message: "Patient profile successfully updated",
+    message: "Profile successfully updated",
     data: result,
   });
-};
+});
 
 // Update Doctor Profile
-const updateDoctorProfile = async (req: Request, res: Response) => {
+const updateDoctorProfile = asyncHandler(async (req, res) => {
   const result = await userService.updateDoctorProfile({
     userId: req.user.userId,
     data: req.body,
@@ -41,53 +54,13 @@ const updateDoctorProfile = async (req: Request, res: Response) => {
   sendResponse(res, {
     statusCode: 200,
     success: true,
-    message: "Doctor profile successfully updated",
+    message: "Profile successfully updated",
     data: result,
   });
-};
-
-// Update Admin Profile
-const updateAdminProfile = async (req: Request, res: Response) => {
-  const result = await userService.updateAdminProfile({
-    userId: req.user.userId,
-    data: req.body,
-  });
-
-  sendResponse(res, {
-    statusCode: 200,
-    success: true,
-    message: "Admin profile successfully updated",
-    data: result,
-  });
-};
+});
 
 // Get Users
-const getDoctors = async (req: Request, res: Response) => {
-  const result = await userService.getDoctors(req.query);
-
-  sendResponse(res, {
-    statusCode: 200,
-    success: true,
-    message: "Successfully retrieved doctors",
-    data: result.data,
-    pagination: result.pagination,
-  });
-};
-
-// Get Doctor Details for patient
-const getDoctorDetails = async (req: Request, res: Response) => {
-  const result = await userService.getDoctorDetails(req.params.id);
-
-  sendResponse(res, {
-    statusCode: 200,
-    success: true,
-    message: "Successfully retrieved doctor details",
-    data: result,
-  });
-};
-
-// Get Users
-const getUsers = async (req: Request, res: Response) => {
+const getUsers = asyncHandler(async (req, res) => {
   const result = await userService.getUsers(req.query);
 
   sendResponse(res, {
@@ -97,10 +70,10 @@ const getUsers = async (req: Request, res: Response) => {
     data: result.data,
     pagination: result.pagination,
   });
-};
+});
 
 // Update User Status
-const updateUserStatus = async (req: Request, res: Response) => {
+const updateUserStatus = asyncHandler(async (req, res) => {
   const result = await userService.updateUserStatus(req.params.id);
 
   sendResponse(res, {
@@ -109,10 +82,10 @@ const updateUserStatus = async (req: Request, res: Response) => {
     message: "User Status Successfully Updated",
     data: result,
   });
-};
+});
 
 // Delete User
-const deleteUser = async (req: Request, res: Response) => {
+const deleteUser = asyncHandler(async (req, res) => {
   const result = await userService.deleteUser(req.params.id);
 
   sendResponse(res, {
@@ -121,15 +94,13 @@ const deleteUser = async (req: Request, res: Response) => {
     message: "User Account Successfully Deleted",
     data: result,
   });
-};
+});
 
 export const userController = {
   getUserProfile,
+  updateUserInformation,
   updatePatientProfile,
   updateDoctorProfile,
-  updateAdminProfile,
-  getDoctors,
-  getDoctorDetails,
   getUsers,
   updateUserStatus,
   deleteUser,

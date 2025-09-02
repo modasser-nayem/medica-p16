@@ -1,37 +1,15 @@
-import config from "../../config";
 import { asyncHandler } from "../../utils/asyncHandler";
+import { clearCookie, COOKIE_NAME, setCookie } from "../../utils/cookie";
 import sendResponse from "../../utils/sendResponse";
 import { authService } from "./auth.service";
 
-const registerPatient = asyncHandler(async (req, res, next) => {
-  const result = await authService.registerPatient(req.body);
+const registerUser = asyncHandler(async (req, res, next) => {
+  const result = await authService.registerUser(req.body);
 
   sendResponse(res, {
     statusCode: 201,
     success: true,
-    message: "Patient registered successfully",
-    data: result,
-  });
-});
-
-const registerDoctor = asyncHandler(async (req, res, next) => {
-  const result = await authService.registerDoctor(req.body);
-
-  sendResponse(res, {
-    statusCode: 201,
-    success: true,
-    message: "Doctor registered successfully",
-    data: result,
-  });
-});
-
-const registerAdmin = asyncHandler(async (req, res, next) => {
-  const result = await authService.registerAdmin(req.body);
-
-  sendResponse(res, {
-    statusCode: 201,
-    success: true,
-    message: "Admin registered successfully",
+    message: "Account Successfully Created",
     data: result,
   });
 });
@@ -46,18 +24,37 @@ const loginUser = asyncHandler(async (req, res, next) => {
     ipAddress,
   });
 
-  res.cookie("refreshToken", result.refreshToken, {
-    secure: config.NODE_ENV === "production",
-    httpOnly: true,
-    sameSite: "none",
-    maxAge: 1000 * 60 * 60 * 24 * 15,
+  setCookie({
+    res,
+    cookieName: COOKIE_NAME.ACCESS_TOKEN,
+    token: result.accessToken,
+    maxAge: 3,
+  });
+
+  setCookie({
+    res,
+    cookieName: COOKIE_NAME.REFRESH_TOKEN,
+    token: result.refreshToken,
+    maxAge: 7,
   });
 
   sendResponse(res, {
     statusCode: 200,
     success: true,
-    message: "Login successful",
-    data: { user: result.user, accessToken: result.accessToken },
+    message: "Successfully Login",
+    data: result.user,
+  });
+});
+
+const logoutUser = asyncHandler(async (req, res, next) => {
+  clearCookie({ res, cookieName: COOKIE_NAME.ACCESS_TOKEN });
+  clearCookie({ res, cookieName: COOKIE_NAME.REFRESH_TOKEN });
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Successfully Logout",
+    data: null,
   });
 });
 
@@ -66,11 +63,18 @@ const refreshToken = asyncHandler(async (req, res, next) => {
 
   const result = await authService.refreshToken({ token: refreshToken });
 
+  setCookie({
+    res,
+    cookieName: COOKIE_NAME.ACCESS_TOKEN,
+    token: result.accessToken,
+    maxAge: 3,
+  });
+
   sendResponse(res, {
     statusCode: 200,
     success: true,
-    message: "Token refreshed successfully",
-    data: result,
+    message: "Token successfully refreshed",
+    data: result.user,
   });
 });
 
@@ -110,13 +114,26 @@ const changePassword = asyncHandler(async (req, res, next) => {
   });
 });
 
+const getAuthUser = asyncHandler(async (req, res, next) => {
+  const result = await authService.getAuthUser({
+    userId: req.user.userId,
+  });
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Successfully Get Information",
+    data: result,
+  });
+});
+
 export const authController = {
-  registerPatient,
-  registerDoctor,
-  registerAdmin,
+  registerUser,
   loginUser,
+  logoutUser,
   refreshToken,
   forgotPassword,
   resetPassword,
   changePassword,
+  getAuthUser,
 };
