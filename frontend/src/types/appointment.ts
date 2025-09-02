@@ -2,7 +2,8 @@ import { z } from "zod";
 import { IDepartment } from "./department";
 import { Doctor, Patient, Prescription } from "./user";
 import { appointmentValidation } from "@/validation/appointment";
-import { PaginationQuery } from ".";
+import { IPaginationQuery } from ".";
+import { ConsultationType } from "./doctor";
 
 export type AppointmentStatus =
    | "PENDING"
@@ -10,22 +11,21 @@ export type AppointmentStatus =
    | "CANCELLED"
    | "COMPLETED";
 
-export type CreateAppointment = z.infer<
+export type ICreateAppointment = z.infer<
    typeof appointmentValidation.createAppointment
 >;
 
-export type RescheduleAppointment = z.infer<
+export type IRescheduleAppointment = z.infer<
    typeof appointmentValidation.rescheduleAppointment
 >;
 
-export type GetTimeSlots = z.infer<
-   typeof appointmentValidation.doctorAvailableSlots
+export type ICancelAppointment = z.infer<
+   typeof appointmentValidation.cancelAppointment
 >;
 
-export interface IGetAppointmentsFilters extends PaginationQuery {
-   date?: string;
-   startDate?: string;
-   endDate?: string;
+export interface IGetAppointmentsFilters extends IPaginationQuery {
+   startsAt?: string;
+   endsAt?: string;
    status?: AppointmentStatus;
 }
 
@@ -49,5 +49,3 @@ export interface IAppointment {
    createdAt: string;
    updatedAt: string;
 }
-
-export type ConsultationType = "VIDEO" | "VOICE" | "CHAT";

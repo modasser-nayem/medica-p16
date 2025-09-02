@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/Card";
-import Button from "../ui/Button";
-import { User } from "../../types";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { User } from "@/types";
 import { Users, Settings, Shield } from "lucide-react";
 
 interface UsersTableProps {

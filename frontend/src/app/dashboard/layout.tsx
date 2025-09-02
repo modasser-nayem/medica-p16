@@ -1,27 +1,10 @@
 "use client";
 
-import Layout from "@/components/layout/Layout";
-import { useAuth } from "@/provider/AuthProvider";
-import { useRouter } from "next/navigation";
+import DashboardLayout from "@/components/layout/DashboardLayout";
 import React from "react";
 
-const DashboardPage = ({ children }: { children: React.ReactNode }) => {
-   const { loading, user } = useAuth();
-   const router = useRouter();
-
-   if (loading) {
-      return (
-         <Layout>
-            <div>Loading Dashboard...</div>
-         </Layout>
-      );
-   }
-
-   if (!user) {
-      router.push("/auth/login");
-   }
-
-   return <Layout>{children}</Layout>;
+const layout = ({ children }: { children: React.ReactNode }) => {
+   return <DashboardLayout>{children}</DashboardLayout>;
 };
 
-export default DashboardPage;
+export default layout;

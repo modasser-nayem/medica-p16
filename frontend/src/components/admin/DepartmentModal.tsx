@@ -2,9 +2,9 @@
 
 import React from "react";
 import { useForm } from "react-hook-form";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/Card";
-import Button from "../ui/Button";
-import Input from "../ui/Input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { IDepartment, ICreateDepartment, IUpdateDepartment } from "../../types";
 import { X, Building2 } from "lucide-react";
 
@@ -75,10 +75,13 @@ const DepartmentModal: React.FC<DepartmentModalProps> = ({
                </div>
             </CardHeader>
             <CardContent>
-               <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
+               <form
+                  onSubmit={handleSubmit(handleFormSubmit)}
+                  className="space-y-4"
+               >
                   <div>
                      <Input
-                        label="Department Name"
+                        title="Department Name"
                         placeholder="Enter department name"
                         {...register("name", {
                            required: "Department name is required",
@@ -91,7 +94,6 @@ const DepartmentModal: React.FC<DepartmentModalProps> = ({
                               message: "Name must be less than 100 characters",
                            },
                         })}
-                        error={errors.name?.message}
                      />
                   </div>
 
@@ -103,7 +105,8 @@ const DepartmentModal: React.FC<DepartmentModalProps> = ({
                         {...register("description", {
                            maxLength: {
                               value: 500,
-                              message: "Description must be less than 500 characters",
+                              message:
+                                 "Description must be less than 500 characters",
                            },
                         })}
                         placeholder="Enter department description (optional)"
@@ -128,7 +131,6 @@ const DepartmentModal: React.FC<DepartmentModalProps> = ({
                      </Button>
                      <Button
                         type="submit"
-                        loading={loading}
                         disabled={loading}
                      >
                         {department ? "Update Department" : "Create Department"}
@@ -141,4 +143,4 @@ const DepartmentModal: React.FC<DepartmentModalProps> = ({
    );
 };
 
-export default DepartmentModal; 
+export default DepartmentModal;

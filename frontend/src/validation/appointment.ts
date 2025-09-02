@@ -1,41 +1,34 @@
 import { z } from "zod";
 
-const createAppointment = z.object({
-   patientId: z.string().uuid("Invalid patient ID"),
-   doctorId: z.string().uuid("Invalid doctor ID"),
-   date: z
-      .string()
-      .regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be in YYYY-MM-DD format"),
-   time: z
-      .string()
-      .regex(
-         /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/,
-         "Invalid time format (HH:MM)"
-      ),
-   type: z.enum(["CHAT", "VOICE", "VIDEO"]),
-   notes: z.string().max(500, "Notes too long").optional(),
-});
+const createAppointment = z
+   .object({
+      patientId: z.string().uuid("Invalid patient ID"),
+      doctorId: z.string().uuid("Invalid doctor ID"),
+      startsAt: z.string().datetime(),
+      consultType: z.enum(["CHAT", "VOICE", "VIDEO"]),
+   })
+   .refine((data) => new Date(data.startsAt) <= new Date(), {
+      message: "Start time must be future time",
+      path: ["startsAt"],
+   });
 
-const rescheduleAppointment = z.object({
-   date: z
-      .string()
-      .regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be in YYYY-MM-DD format"),
-   time: z
-      .string()
-      .regex(
-         /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/,
-         "Invalid time format (HH:MM)"
-      ),
-   notes: z.string().max(500, "Notes too long").optional(),
-});
+const rescheduleAppointment = z
+   .object({
+      startsAt: z.string().datetime(),
+   })
+   .refine((data) => new Date(data.startsAt) <= new Date(), {
+      message: "Start time must be future time",
+      path: ["startsAt"],
+   });
 
-const doctorAvailableSlots = z.object({
-   doctorId: z.string({ required_error: "doctorId is required" }).uuid(),
-   date: z.string({ required_error: "date is required" }).datetime(),
+const cancelAppointment = z.object({
+   cancelReason: z
+      .string({ required_error: "cancelReason is required" })
+      .min(5, { message: "cancel reason min 5 characters" }),
 });
 
 export const appointmentValidation = {
    createAppointment,
    rescheduleAppointment,
-   doctorAvailableSlots,
+   cancelAppointment,
 };

@@ -7,17 +7,3 @@ export const api = axios.create({
       "Content-Type": "application/json",
    },
 });
-
-// Add request interceptor (only in client-side code)
-if (typeof window !== "undefined") {
-   api.interceptors.request.use(
-      (config) => {
-         const token = localStorage.getItem("authToken");
-         if (token) {
-            config.headers["Authorization"] = token;
-         }
-         return config;
-      },
-      (error) => Promise.reject(error)
-   );
-}

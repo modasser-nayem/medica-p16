@@ -1,28 +1,20 @@
+import { departmentValidation } from "@/validation/department";
+import z from "zod";
+
 export interface IDepartment {
    id: string;
    name: string;
+   icon: string;
    description: string | null;
-   isActive: boolean;
-   createdAt: string;
-   updatedAt: string;
+   isDeleted: boolean;
+   createdAt: Date;
+   updatedAt: Date;
 }
 
-export interface ICreateDepartment {
-   name: string;
-   description?: string;
-}
+export type ICreateDepartment = z.infer<
+   typeof departmentValidation.createDepartment
+>;
 
-export interface IUpdateDepartment {
-   name?: string;
-   description?: string | null;
-   isActive?: boolean;
-}
-
-export interface IGetDepartmentsFilter {
-   page?: number;
-   limit?: number;
-   search?: string;
-   active?: "yes" | "no";
-   sortBy?: string;
-   sortOrder?: "asc" | "desc";
-}
+export type IUpdateDepartment = z.infer<
+   typeof departmentValidation.updateDepartment
+>;

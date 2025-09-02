@@ -1,39 +1,18 @@
 "use client";
-
-import AdminDashboard from "@/components/admin/AdminDashboard";
-import DoctorDashboard from "@/components/doctor/DoctorDashboard";
-import PatientDashboard from "@/components/patient/PatientDashboard";
-import { useAuth } from "@/provider/AuthProvider";
+import { ROUTES } from "@/constant";
+import { useAppSelector } from "@/hooks/redux";
+import { selectedUser } from "@/redux/slice/authSlice";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
-import React from "react";
-
-const DashboardPage = () => {
+export default function DashboardRedirect() {
+   const user = useAppSelector(selectedUser);
    const router = useRouter();
-   const { loading, user } = useAuth();
 
-   if (loading) {
-      return <div>Load Dashboard...</div>;
-   }
+   useEffect(() => {
+      if (!user) return; // still loading
+      router.replace(ROUTES.DASHBOARD(user.role));
+   }, [user, router]);
 
-   if (!user) {
-      router.push("/auth/login");
-   }
-
-   const renderDashboard = () => {
-      switch (user?.role) {
-         case "PATIENT":
-            return <PatientDashboard />;
-         case "DOCTOR":
-            return <DoctorDashboard />;
-         case "ADMIN":
-            return <AdminDashboard />;
-         default:
-            return <PatientDashboard />;
-      }
-   };
-
-   return <div>{renderDashboard()}</div>;
-};
-
-export default DashboardPage;
+   return <div>Loading dashboard...</div>;
+}

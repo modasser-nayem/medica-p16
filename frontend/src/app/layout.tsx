@@ -1,7 +1,8 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { Inter, Poppins } from "next/font/google";
-import MainLayout from "@/components/layout/MainLayout";
+import { Toaster } from "react-hot-toast";
+import { Providers } from "@/provider/Providers";
 
 const inter = Inter({
    subsets: ["latin"],
@@ -35,7 +36,33 @@ export default function RootLayout({
          className={`${inter.variable} ${poppins.variable}`}
       >
          <body className={`${inter.className} antialiased font-sans`}>
-            <MainLayout>{children}</MainLayout>
+            <Providers>
+               <main>{children}</main>
+               <Toaster
+                  position="top-right"
+                  toastOptions={{
+                     duration: 4000,
+                     style: {
+                        background: "#363636",
+                        color: "#fff",
+                     },
+                     success: {
+                        duration: 3000,
+                        iconTheme: {
+                           primary: "#10B981",
+                           secondary: "#fff",
+                        },
+                     },
+                     error: {
+                        duration: 5000,
+                        iconTheme: {
+                           primary: "#EF4444",
+                           secondary: "#fff",
+                        },
+                     },
+                  }}
+               />
+            </Providers>
          </body>
       </html>
    );

@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/Card";
-import Button from "../ui/Button";
-import Input from "../ui/Input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Filter, Search } from "lucide-react";
 
 interface DepartmentFiltersProps {
@@ -43,7 +43,9 @@ const DepartmentFilters: React.FC<DepartmentFiltersProps> = ({
 
                <select
                   value={statusFilter}
-                  onChange={(e) => onStatusFilterChange(e.target.value as "yes" | "no" | "")}
+                  onChange={(e) =>
+                     onStatusFilterChange(e.target.value as "yes" | "no" | "")
+                  }
                   className="h-10 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                >
                   <option value="">All Status</option>
@@ -63,4 +65,4 @@ const DepartmentFilters: React.FC<DepartmentFiltersProps> = ({
    );
 };
 
-export default DepartmentFilters; 
+export default DepartmentFilters;

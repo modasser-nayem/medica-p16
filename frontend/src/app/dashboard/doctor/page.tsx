@@ -1,4 +1,4 @@
-import DoctorDashboard from "@/components/doctor/DoctorDashboard";
+import DoctorDashboard from "@/components/dashboard/DoctorDashboard";
 import React from "react";
 
 const DoctorRoot = () => {

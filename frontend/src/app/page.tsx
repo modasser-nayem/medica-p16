@@ -1,14 +1,14 @@
 "use client";
 
 import React from "react";
-import PublicHeader from "@/components/layout/PublicHeader";
-import PublicFooter from "@/components/layout/PublicFooter";
-import { HeroSection } from "@/components/home/HeroSection";
-import { StatsSection } from "@/components/home/StatsSection";
-import { FeaturesSection } from "@/components/home/FeaturesSection";
-import { DepartmentsSection } from "@/components/home/DepartmentsSection";
-import { TestimonialsSection } from "@/components/home/TestimonialsSection";
-import CTASection from "@/components/home/CTASection";
+import PublicHeader from "@/components/shared/Header";
+import PublicFooter from "@/components/shared/Footer";
+import { HeroSection } from "@/components/landing/HeroSection";
+import { StatsSection } from "@/components/landing/StatsSection";
+import { FeaturesSection } from "@/components/landing/FeaturesSection";
+import { DepartmentsSection } from "@/components/landing/DepartmentsSection";
+import { TestimonialsSection } from "@/components/landing/TestimonialsSection";
+import CTASection from "@/components/landing/CTASection";
 
 const HomePage = () => {
    return (
@@ -17,8 +17,8 @@ const HomePage = () => {
          <main>
             <HeroSection />
             <StatsSection />
-            <FeaturesSection />
             <DepartmentsSection />
+            <FeaturesSection />
             <TestimonialsSection />
             <CTASection />
          </main>

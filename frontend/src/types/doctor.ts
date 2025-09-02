@@ -1,23 +1,50 @@
-import { ConsultationType } from "./appointment";
+import z from "zod";
+import { IGender, IPaginationQuery } from "./index";
+import { doctorValidation } from "@/validation/doctor";
+import { scheduleValidation } from "@/validation/schedule";
 
 export interface ISchedule {
+   dayOfWeek: number;
    startTime: string;
    endTime: string;
-   dayOfWeek: number;
-   isAvailable: boolean;
+   slotDurationMinutes: number;
    id: string;
-   doctorId: string;
+   isActive: boolean;
    createdAt: Date;
    updatedAt: Date;
+   doctorId: string;
 }
 
-export interface CreateSchedule {
+export type ICreateSchedule = {
+   dayOfWeek: number;
+   startTime: string;
+   endTime: string;
+   slotDurationMinutes?: number;
+};
+
+export type IUpdateSchedule = {
+   dayOfWeek: number;
+   startTime: string;
+   endTime: string;
+   slotDurationMinutes?: number;
+   isActive?: boolean;
+};
+
+export type ICreateScheduleException = z.infer<
+   typeof scheduleValidation.createScheduleException
+>;
+
+export interface IScheduleException {
+   id: string;
    doctorId: string;
-   data: {
-      dayOfWeek: number;
-      startTime: string;
-      endTime: string;
-   };
+   startTime: string | null;
+   endTime: string | null;
+   date: Date;
+   closed: boolean;
+   blockedSlots: string[];
+   note: string | null;
+   createdAt: Date;
+   updatedAt: Date;
 }
 
 export interface UpdateSchedule {
@@ -30,17 +57,33 @@ export interface UpdateSchedule {
    };
 }
 
-export interface CreateOrUpdateConsultationFees {
-   doctorId: string;
-   type: ConsultationType;
-   fee: number;
+export interface IScheduleSlot {
+   date: string;
+   slots: string[];
+   duration: number;
 }
 
-export interface ConsultationFee {
+export type ICreateOrUpdateFees = z.infer<
+   typeof doctorValidation.createOrUpdateFees
+>;
+
+export type ConsultationType = "VIDEO" | "VOICE" | "CHAT";
+
+export interface IConsultationFee {
    id: string;
    type: ConsultationType;
    doctorId: string;
    fee: number;
+   currency: string;
+   isActive: boolean;
+}
+
+export interface IGetDoctorsFilter extends IPaginationQuery {
+   search?: string;
+   department?: string;
+   specialty?: string;
+   rating?: number;
+   sortBy?: "rating" | "createdAt";
 }
 
 export interface IDoctor {
@@ -62,4 +105,27 @@ export interface IDoctor {
    };
    totalReviews: number;
    averageRating: number;
+}
+
+export interface IDoctorDetails {
+   id: string;
+   name: string;
+   email: string;
+   phone: string | null;
+   dateOfBirth: Date | null;
+   gender: IGender;
+   address: string | null;
+   profileImage: string | null;
+   specialties: string | null;
+   qualification: string | null;
+   experience: number | null;
+   userId: string;
+   fees: {
+      type: ConsultationType;
+      id: string;
+      isActive: boolean;
+      fee: number;
+      currency: string;
+   }[];
+   totalReviews: number;
 }

@@ -1,7 +1,14 @@
+import { BLOOD_GROUP_OPTIONS } from "./../constant/index";
+import { GENDER_OPTIONS } from "@/constant";
 import { IAppointment } from "./appointment";
 import { IDepartment } from "./department";
+import z from "zod";
+import { userValidation } from "@/validation/user";
 
 export type UserRole = "PATIENT" | "DOCTOR" | "ADMIN";
+export type IGender = keyof typeof GENDER_OPTIONS;
+
+export type IBloodGroup = keyof typeof BLOOD_GROUP_OPTIONS;
 
 export interface IFilterUsers {
    search?: string;
@@ -15,7 +22,7 @@ export interface User {
    email: string;
    phone?: string;
    dateOfBirth?: string;
-   gender?: "male" | "female" | "other";
+   gender?: typeof GENDER_OPTIONS;
    address?: string;
    profileImage?: string;
    role: UserRole;
@@ -23,6 +30,34 @@ export interface User {
    createdAt: string;
    updatedAt: string;
 }
+
+export type IPatientProfile = {
+   bloodGroup?: IBloodGroup;
+   emergencyContact?: string;
+   medicalHistory?: string;
+   allergies?: string;
+};
+
+export type IDoctorProfile = {
+   departmentId?: string | undefined;
+   specialties?: string | undefined;
+   qualification?: string | undefined;
+   experience?: number | undefined;
+   bio?: string | undefined;
+   timeZone?: string | undefined;
+};
+
+export type IUpdateUserProfile = z.infer<
+   typeof userValidation.updateUserProfile
+>;
+
+export type IUpdatePatientProfile = z.infer<
+   typeof userValidation.updatePatientProfile
+>;
+
+export type IUpdateDoctorProfile = z.infer<
+   typeof userValidation.updateDoctorProfile
+>;
 
 export interface Doctor extends User {
    role: "DOCTOR";

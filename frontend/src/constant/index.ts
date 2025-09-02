@@ -1,5 +1,10 @@
+import { UserRole } from "@/types";
+
 export const APP_NAME = "Medica HMS";
 export const APP_DESCRIPTION = "Hospital Management System";
+
+export const PROFILE_IMAGE = (no = 1, gender?: "men" | "women") =>
+   `https://randomuser.me/api/portraits/${gender ? gender : "men"}/${no}.jpg`;
 
 export const USER_ROLES = {
    PATIENT: "PATIENT",
@@ -7,26 +12,63 @@ export const USER_ROLES = {
    ADMIN: "ADMIN",
 } as const;
 
-export const APPOINTMENT_STATUS = {
-   SCHEDULED: "SCHEDULED",
-   CONFIRMED: "CONFIRMED",
-   IN_PROGRESS: "IN_PROGRESS",
-   COMPLETED: "COMPLETED",
-   CANCELLED: "CANCELLED",
-   NO_SHOW: "NO_SHOW",
-} as const;
+export const GENDER_OPTIONS = [
+   { value: "MALE", label: "Male" },
+   { value: "FEMALE", label: "Female" },
+   { value: "OTHER", label: "Other" },
+] as const;
 
-export const APPOINTMENT_TYPE = {
-   CONSULTATION: "CONSULTATION",
-   FOLLOW_UP: "FOLLOW_UP",
-   EMERGENCY: "EMERGENCY",
+export const BLOOD_GROUP_OPTIONS = [
+   { value: "A+", label: "A+" },
+   { value: "A-", label: "A-" },
+   { value: "B+", label: "B+" },
+   { value: "B-", label: "B-" },
+   { value: "AB+", label: "AB+" },
+   { value: "AB-", label: "AB-" },
+   { value: "O+", label: "O+" },
+   { value: "O-", label: "O-" },
+];
+
+export const APPOINTMENT_STATUS = {
+   PENDING: "PENDING",
+   CONFIRMED: "CONFIRMED",
+   CANCELLED: "CANCELLED",
+   COMPLETED: "COMPLETED",
 } as const;
 
 export const CONSULTATION_TYPE = {
+   CHAT: "CHAT",
    VIDEO: "VIDEO",
    VOICE: "VOICE",
-   CHAT: "CHAT",
-   IN_PERSON: "IN_PERSON",
+} as const;
+
+export const CONSULTATION_STATUS = {
+   SCHEDULED: "SCHEDULED",
+   IN_PROGRESS: "IN_PROGRESS",
+   COMPLETED: "COMPLETED",
+   CANCELLED: "CANCELLED",
+} as const;
+
+export const MESSAGE_TYPE = {
+   TEXT: "TEXT",
+   IMAGE: "IMAGE",
+   FILE: "FILE",
+   AUDIO: "AUDIO",
+   VIDEO: "VIDEO",
+} as const;
+
+export const CALL_STATUS = {
+   INITIATED: "INITIATED",
+   RINGING: "RINGING",
+   ANSWERED: "ANSWERED",
+   REJECTED: "REJECTED",
+   ENDED: "ENDED",
+   MISSED: "MISSED",
+} as const;
+
+export const CALL_TYPE = {
+   VOICE: "VOICE",
+   VIDEO: "VIDEO",
 } as const;
 
 export const PAYMENT_STATUS = {
@@ -36,48 +78,20 @@ export const PAYMENT_STATUS = {
    REFUNDED: "REFUNDED",
 } as const;
 
-export const PAYMENT_METHOD = {
-   CARD: "CARD",
-   BANK_TRANSFER: "BANK_TRANSFER",
-   CASH: "CASH",
-   INSURANCE: "INSURANCE",
-} as const;
-
-export const LAB_REQUEST_STATUS = {
-   PENDING: "PENDING",
-   IN_PROGRESS: "IN_PROGRESS",
-   COMPLETED: "COMPLETED",
-   CANCELLED: "CANCELLED",
-} as const;
-
-export const TICKET_PRIORITY = {
-   LOW: "LOW",
-   MEDIUM: "MEDIUM",
-   HIGH: "HIGH",
-   URGENT: "URGENT",
-} as const;
-
-export const TICKET_STATUS = {
-   OPEN: "OPEN",
-   IN_PROGRESS: "IN_PROGRESS",
-   RESOLVED: "RESOLVED",
-   CLOSED: "CLOSED",
-} as const;
-
-export const TICKET_CATEGORY = {
-   TECHNICAL: "TECHNICAL",
-   BILLING: "BILLING",
-   APPOINTMENT: "APPOINTMENT",
-   GENERAL: "GENERAL",
-} as const;
-
 export const NOTIFICATION_TYPE = {
-   INFO: "INFO",
-   SUCCESS: "SUCCESS",
-   WARNING: "WARNING",
-   ERROR: "ERROR",
-   REMINDER: "REMINDER",
+   APPOINTMENT: "APPOINTMENT",
+   PRESCRIPTION: "PRESCRIPTION",
+   PAYMENT: "PAYMENT",
+   SYSTEM: "SYSTEM",
 } as const;
+
+// export const NOTIFICATION_TYPE = {
+//    INFO: "INFO",
+//    SUCCESS: "SUCCESS",
+//    WARNING: "WARNING",
+//    ERROR: "ERROR",
+//    REMINDER: "REMINDER",
+// } as const;
 
 export const DAYS_OF_WEEK = [
    "Sunday",
@@ -108,54 +122,35 @@ export const TIME_SLOTS = [
    "17:30",
 ] as const;
 
-export const GENDER_OPTIONS = [
-   { value: "male", label: "Male" },
-   { value: "female", label: "Female" },
-   { value: "other", label: "Other" },
-] as const;
-
 export const STATUS_COLORS = {
-   [APPOINTMENT_STATUS.SCHEDULED]: "bg-blue-100 text-blue-800",
-   [APPOINTMENT_STATUS.CONFIRMED]: "bg-green-100 text-green-800",
-   [APPOINTMENT_STATUS.IN_PROGRESS]: "bg-yellow-100 text-yellow-800",
-   [APPOINTMENT_STATUS.COMPLETED]: "bg-green-100 text-green-800",
-   [APPOINTMENT_STATUS.CANCELLED]: "bg-red-100 text-red-800",
-   [APPOINTMENT_STATUS.NO_SHOW]: "bg-gray-100 text-gray-800",
-} as const;
-
-export const PRIORITY_COLORS = {
-   [TICKET_PRIORITY.LOW]: "bg-gray-100 text-gray-800",
-   [TICKET_PRIORITY.MEDIUM]: "bg-blue-100 text-blue-800",
-   [TICKET_PRIORITY.HIGH]: "bg-yellow-100 text-yellow-800",
-   [TICKET_PRIORITY.URGENT]: "bg-red-100 text-red-800",
-} as const;
-
-export const PAYMENT_STATUS_COLORS = {
-   [PAYMENT_STATUS.PENDING]: "bg-yellow-100 text-yellow-800",
-   [PAYMENT_STATUS.COMPLETED]: "bg-green-100 text-green-800",
-   [PAYMENT_STATUS.FAILED]: "bg-red-100 text-red-800",
-   [PAYMENT_STATUS.REFUNDED]: "bg-gray-100 text-gray-800",
-} as const;
-
-export const LAB_STATUS_COLORS = {
-   [LAB_REQUEST_STATUS.PENDING]: "bg-yellow-100 text-yellow-800",
-   [LAB_REQUEST_STATUS.IN_PROGRESS]: "bg-blue-100 text-blue-800",
-   [LAB_REQUEST_STATUS.COMPLETED]: "bg-green-100 text-green-800",
-   [LAB_REQUEST_STATUS.CANCELLED]: "bg-red-100 text-red-800",
+   SUCCESS: "bg-success-100 text-success-800",
+   WARNING: "bg-warning-100 text-warning-800",
+   ERROR: "bg-error-100 text-error-800",
+   OTHER: "bg-gray-100 text-gray-800",
 } as const;
 
 export const ROUTES = {
    HOME: "/",
-   LOGIN: "/auth/login",
-   REGISTER: "/auth/register",
-   DASHBOARD: "/dashboard",
-   APPOINTMENTS: "/appointments",
-   DOCTORS: "/doctors",
-   PATIENTS: "/patients",
-   LAB: "/lab",
-   ADMIN: "/admin",
-   PROFILE: "/profile",
+   LOGIN: "/login",
+   REGISTER: "/register",
+   UNAUTHORIZE: "/unauthorize",
+   ABOUT: "/about",
+   CONTACT: "/contact",
+   SERVICE: "/service",
    SUPPORT: "/support",
+   DOCTORS: "/doctors",
+   BOOK_APPOINTMENTS: "/appointments",
+   DASHBOARD: (role?: UserRole) =>
+      role ? `/dashboard/${String(role).toLowerCase()}` : "/dashboard",
+   PROFILE: "/dashboard/profile",
+} as const;
+
+export const API_METHODS = {
+   GET: "GET",
+   POST: "POST",
+   PUT: "PUT",
+   PATCH: "PATCH",
+   DELETE: "DELETE",
 } as const;
 
 export const API_ENDPOINTS = {
@@ -166,47 +161,65 @@ export const API_ENDPOINTS = {
       REFRESH: "/auth/refresh",
       FORGOT_PASSWORD: "/auth/forgot-password",
       RESET_PASSWORD: "/auth/reset-password",
+      AUTH_USER: "/auth/me",
    },
-   USERS: {
+   USER: {
       PROFILE: "/users/profile",
-      UPDATE_PROFILE: "/users/profile",
-      CHANGE_PASSWORD: "/users/change-password",
+      UPDATE_USER_PROFILE: "/users/user-profile",
+      UPDATE_PATIENT_PROFILE: "/users/patient-profile",
+      UPDATE_DOCTOR_PROFILE: "/users/doctor-profile",
+      CHANGE_PASSWORD: "/auth/change-password",
+      GET_LIST: "/users",
+      UPDATE_STATUS: (userId: string) => `/users/status/${userId}`,
+      DELETE: (userId: string) => `/users/${userId}`,
    },
-   APPOINTMENTS: {
-      LIST: "/appointments",
-      CREATE: "/appointments",
-      DETAILS: (id: string) => `/appointments/${id}`,
-      UPDATE: (id: string) => `/appointments/${id}`,
-      CANCEL: (id: string) => `/appointments/${id}/cancel`,
+   DEPARTMENT: {
+      CREATE: "/departments",
+      GET_LIST: "/departments",
+      DETAILS: (id: string) => `/departments/${id}`,
+      UPDATE: (id: string) => `/departments/${id}`,
+      DELETE: (id: string) => `/departments/${id}`,
    },
-   DOCTORS: {
-      LIST: "/doctors",
+   DOCTOR: {
+      GET_LIST: "/doctors",
       DETAILS: (id: string) => `/doctors/${id}`,
-      AVAILABILITY: (id: string) => `/doctors/${id}/availability`,
+      SLOTS: (id: string) => `/doctors/${id}/slots`,
+      CREATE_FEES: "/doctors/fees",
+      GET_FEES: (doctorId: string) => `/doctors/${doctorId}/fees`,
+      UPDATE_FEES: (feeId: string) => `/doctors/fees/${feeId}`,
    },
-   DEPARTMENTS: {
-      LIST: "/departments",
+   SCHEDULE: {
+      CREATE_SCHEDULE: "/schedules",
+      GET_SCHEDULES: "/schedules",
+      UPDATE_SCHEDULE: `/schedules`,
+      DELETE_SCHEDULE: (id: string) => `/schedules/${id}`,
+      CREATE_EXCEPTION: "/schedules/exception",
+      GET_EXCEPTIONS: "/schedules/exception",
+      DELETE_EXCEPTION: (id: string) => `/schedules/exception/:${id}`,
    },
-   LAB: {
-      TESTS: "/lab/tests",
-      REQUESTS: "/lab/requests",
-      RESULTS: "/lab/results",
-   },
-   PAYMENTS: {
-      LIST: "/payments",
-      CREATE: "/payments",
-   },
-   NOTIFICATIONS: {
-      LIST: "/notifications",
-      MARK_READ: (id: string) => `/notifications/${id}/read`,
-   },
-   SUPPORT: {
-      TICKETS: "/support/tickets",
-      CREATE: "/support/tickets",
-      DETAILS: (id: string) => `/support/tickets/${id}`,
-      RESPOND: (id: string) => `/support/tickets/${id}/respond`,
+   APPOINTMENT: {
+      CREATE: "/appointments",
+      GET_LIST: "/appointments",
+      DETAILS: (id: string) => `/appointments/${id}`,
+      RESCHEDULE: (id: string) => `/appointments/${id}/reschedule`,
+      CANCEL: (id: string) => `/appointments/${id}/cancel`,
+      DELETE: (id: string) => `/appointments/${id}`,
    },
    DASHBOARD: {
-      STATS: "/dashboard/stats",
+      ADMIN_STATS: "/dashboard/admin-stats",
+      DOCTOR_STATS: "/dashboard/doctor-stats",
+      PATIENT_STATS: "/dashboard/patient-stats",
+      PUBLIC_STATS: "/dashboard/public-stats",
+      USER_ACTIVITY: "/dashboard/users-activities",
    },
+} as const;
+
+// =================================
+//            NON_REQUIRED
+// =================================
+export const PAYMENT_METHOD = {
+   CARD: "CARD",
+   BANK_TRANSFER: "BANK_TRANSFER",
+   CASH: "CASH",
+   INSURANCE: "INSURANCE",
 } as const;
