@@ -6,23 +6,11 @@ import { authorize } from "../../middlewares/authorize";
 
 const router = express.Router();
 
-// Register Users
+// Register User
 router.post(
-  "/register/patient",
-  requestValidate(authSchemaValidation.patientRegister),
-  authController.registerPatient,
-);
-
-router.post(
-  "/register/doctor",
-  requestValidate(authSchemaValidation.doctorRegister),
-  authController.registerDoctor,
-);
-
-router.post(
-  "/register/admin",
-  requestValidate(authSchemaValidation.adminRegister),
-  authController.registerAdmin,
+  "/register",
+  requestValidate(authSchemaValidation.userRegistration),
+  authController.registerUser,
 );
 
 // Logged In User
@@ -32,8 +20,11 @@ router.post(
   authController.loginUser,
 );
 
+// Logged Out User
+router.post("/logout", authorize(), authController.logoutUser);
+
 // Refresh token
-router.post("/refresh-token", authorize(), authController.refreshToken);
+router.post("/refresh", authorize(), authController.refreshToken);
 
 // Forgot Password
 router.post(
@@ -56,5 +47,8 @@ router.put(
   requestValidate(authSchemaValidation.changePassword),
   authController.changePassword,
 );
+
+// Auth user
+router.get("/me", authorize(), authController.getAuthUser);
 
 export const authRoutes = router;

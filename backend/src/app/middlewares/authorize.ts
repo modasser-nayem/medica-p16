@@ -2,13 +2,13 @@ import { NextFunction, Request, Response } from "express";
 import AppError from "../errors/AppError";
 import { asyncHandler } from "../utils/asyncHandler";
 import jwtHelper from "../utils/jwt";
-import prisma from "../db/connector";
 import { UserRole } from "@prisma/client";
+import { COOKIE_NAME } from "../utils/cookie";
 
 export const authorize = (...roles: UserRole[]) => {
   return asyncHandler(
     async (req: Request, _res: Response, next: NextFunction) => {
-      const token = req.headers.authorization;
+      const token = req.cookies[COOKIE_NAME.ACCESS_TOKEN];
       if (!token) throw new AppError(401, "unauthorized access");
 
       const decoded = jwtHelper.verifyAccessToken(token);

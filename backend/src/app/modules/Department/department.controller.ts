@@ -14,13 +14,13 @@ const createDepartment = asyncHandler(async (req, res) => {
 });
 
 const getAllDepartments = asyncHandler(async (req, res) => {
-  const result = await departmentService.getAllDepartments(req.query);
+  const result = await departmentService.getAllDepartments();
+
   sendResponse(res, {
     statusCode: 200,
     success: true,
     message: "Departments retrieved successfully",
-    data: result.data,
-    pagination: result.pagination,
+    data: result,
   });
 });
 

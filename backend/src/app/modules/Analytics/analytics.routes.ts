@@ -6,31 +6,31 @@ const router = Router();
 
 // Admin Stats
 router.get(
-  "/admin/stats",
+  "/admin-stats",
   authorize("ADMIN"),
   analyticsController.getAdminStats,
 );
 
 // Doctor Stats
 router.get(
-  "/doctor/stats",
+  "/doctor-stats",
   authorize("DOCTOR"),
   analyticsController.getDoctorStats,
 );
 
 // Patient Stats
 router.get(
-  "/patient/stats",
+  "/patient-stats",
   authorize("PATIENT"),
   analyticsController.getPatientStats,
 );
 
 // Public Stats
-router.get("/users/stats", analyticsController.getPublicStats);
+router.get("/public-stats", analyticsController.getPublicStats);
 
 // Get user activity
 router.get(
-  "/users/activity",
+  "/users-activities",
   authorize("ADMIN"),
   analyticsController.getUserActivity,
 );

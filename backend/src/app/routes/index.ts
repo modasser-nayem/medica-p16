@@ -6,6 +6,8 @@ import { doctorRoutes } from "../modules/Doctor/doctor.routes";
 import { appointmentRoutes } from "../modules/Appointment/appointment.routes";
 import { consultationRoutes } from "../modules/Consultation/consultation.routes";
 import { analyticsRouters } from "../modules/Analytics/analytics.routes";
+import { scheduleRoutes } from "../modules/Schedule/schedule.routes";
+import { paymentRoutes } from "../modules/Payment/payment.routes";
 
 const routers = Router();
 const moduleRoutes: { path: string; route: Router }[] = [
@@ -14,11 +16,11 @@ const moduleRoutes: { path: string; route: Router }[] = [
     route: authRoutes,
   },
   {
-    path: "/",
+    path: "/users",
     route: userRoutes,
   },
   {
-    path: "/",
+    path: "/dashboard",
     route: analyticsRouters,
   },
   {
@@ -26,12 +28,20 @@ const moduleRoutes: { path: string; route: Router }[] = [
     route: departmentRoutes,
   },
   {
-    path: "/doctor",
+    path: "/doctors",
     route: doctorRoutes,
   },
   {
-    path: "/",
+    path: "/schedules",
+    route: scheduleRoutes,
+  },
+  {
+    path: "/appointments",
     route: appointmentRoutes,
+  },
+  {
+    path: "/payments",
+    route: paymentRoutes,
   },
   {
     path: "/consultations",

@@ -54,7 +54,10 @@ const rescheduleAppointment = asyncHandler(async (req, res) => {
 });
 
 const cancelAppointment = asyncHandler(async (req, res) => {
-  const result = await appointmentService.cancelAppointment(req.params.id);
+  const result = await appointmentService.cancelAppointment({
+    appointmentId: req.params.id,
+    cancelReason: req.body.cancelReason,
+  });
 
   sendResponse(res, {
     statusCode: 200,
@@ -75,17 +78,6 @@ const deleteAppointment = asyncHandler(async (req, res) => {
   });
 });
 
-const getDoctorAvailableSlots = asyncHandler(async (req, res) => {
-  const result = await appointmentService.getDoctorAvailableSlots(req.body);
-
-  sendResponse(res, {
-    statusCode: 200,
-    success: true,
-    message: "Successfully get available slots",
-    data: result,
-  });
-});
-
 export const appointmentController = {
   createAppointment,
   getAppointments,
@@ -93,5 +85,4 @@ export const appointmentController = {
   rescheduleAppointment,
   cancelAppointment,
   deleteAppointment,
-  getDoctorAvailableSlots,
 };

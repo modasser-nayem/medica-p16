@@ -12,6 +12,7 @@ import { paginate } from "../../utils/pagination";
 
 const getAdminStats = async (): Promise<IAdminStats> => {
   const users = await prisma.user.findMany({
+    where: { isDeleted: false },
     select: { id: true, role: true, isActive: true },
   });
 
@@ -36,10 +37,8 @@ const getAdminStats = async (): Promise<IAdminStats> => {
 
   const todaysAppointments = await prisma.appointment.count({
     where: {
-      date: {
-        gte: startOfToday,
-        lte: endOfToday,
-      },
+      startsAt: { gte: startOfToday },
+      endsAt: { lte: endOfToday },
     },
   });
 
@@ -81,39 +80,24 @@ const getDoctorStats = async (userId: string): Promise<IDoctorStats> => {
   const todaysAppointments = await prisma.appointment.count({
     where: {
       doctorId,
-      date: {
+      startsAt: {
         gte: startOfToday,
+      },
+      endsAt: {
         lte: endOfToday,
       },
     },
   });
 
   // Upcoming appointment
-  const now = new Date();
-
-  // Convert current time into your dummy time format (1970-01-01)
-  const currentTime = new Date(
-    Date.UTC(1970, 0, 1, now.getHours(), now.getMinutes(), now.getSeconds()),
-  );
-
   const upcomingAppointment = await prisma.appointment.findFirst({
     where: {
       doctorId: doctorId,
-      date: {
-        gte: startOfToday,
-        lte: endOfToday,
-      },
-      time: {
-        gt: currentTime,
-      },
     },
-    orderBy: {
-      time: "asc", // earliest upcoming
-    },
+    orderBy: { startsAt: "desc" },
     select: {
       id: true,
-      date: true,
-      time: true,
+      startsAt: true,
     },
   });
 
@@ -157,31 +141,14 @@ const getPatientStats = async (userId: string): Promise<IPatientStats> => {
   });
 
   // Upcoming appointment
-  const now = new Date();
-
-  // Convert current time into your dummy time format (1970-01-01)
-  const currentTime = new Date(
-    Date.UTC(1970, 0, 1, now.getHours(), now.getMinutes(), now.getSeconds()),
-  );
-
   const upcomingAppointment = await prisma.appointment.findFirst({
     where: {
       patientId,
-      date: {
-        gte: startOfToday,
-        lte: endOfToday,
-      },
-      time: {
-        gt: currentTime,
-      },
     },
-    orderBy: {
-      time: "asc", // earliest upcoming
-    },
+    orderBy: { startsAt: "desc" },
     select: {
       id: true,
-      date: true,
-      time: true,
+      startsAt: true,
     },
   });
 
@@ -223,8 +190,6 @@ const getUserActivity = async (filters: IGetUserActivityFilters) => {
       },
     },
     action: true,
-    entity: true,
-    entityId: true,
     details: true,
     ipAddress: true,
     userAgent: true,
@@ -237,10 +202,6 @@ const getUserActivity = async (filters: IGetUserActivityFilters) => {
 
   if (filters.action) {
     where.action = filters.action;
-  }
-
-  if (filters.entity) {
-    where.entity = filters.entity;
   }
 
   if (filters.startDate && filters.endDate) {

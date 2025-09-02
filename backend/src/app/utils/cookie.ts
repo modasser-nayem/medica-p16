@@ -1,21 +1,41 @@
 import { Response } from "express";
 import config from "../config";
 
-export const COOKIE_NAME = "accessToken";
+export const COOKIE_NAME = {
+  ACCESS_TOKEN: "accessToken",
+  REFRESH_TOKEN: "refreshToken",
+};
 
-export const setAuthCookie = (res: Response, token: string) => {
-  res.cookie(COOKIE_NAME, token, {
+type TSetCookie = {
+  res: Response;
+  cookieName: string;
+  token: string;
+  maxAge?: number;
+};
+
+type TClearCookie = {
+  res: Response;
+  cookieName: string;
+};
+
+export const setCookie = ({
+  res,
+  cookieName,
+  token,
+  maxAge = 7,
+}: TSetCookie) => {
+  res.cookie(cookieName, token, {
     httpOnly: true,
-    secure: config.NODE_ENV === "production",
-    sameSite: config.NODE_ENV === "production" ? "lax" : "none",
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    secure: true,
+    sameSite: "none",
+    maxAge: maxAge * 24 * 60 * 60 * 1000, // 7 days
   });
 };
 
-export const clearAuthCookie = (res: Response) => {
-  res.clearCookie(COOKIE_NAME, {
+export const clearCookie = ({ res, cookieName }: TClearCookie) => {
+  res.clearCookie(cookieName, {
     httpOnly: true,
-    secure: config.NODE_ENV === "production",
-    sameSite: config.NODE_ENV === "production" ? "lax" : "none",
+    secure: true,
+    sameSite: "none",
   });
 };

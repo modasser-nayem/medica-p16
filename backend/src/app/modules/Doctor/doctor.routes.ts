@@ -1,35 +1,36 @@
 import express from "express";
-import requestValidate from "../../middlewares/requestValidation";
-import { doctorSchemaValidation } from "./doctor.validation";
 import { doctorController } from "./doctor.controller";
 import { authorize } from "../../middlewares/authorize";
+import requestValidate from "../../middlewares/requestValidation";
+import { doctorSchemaValidation } from "./doctor.validation";
 
 const router = express.Router();
 
-// Create schedule for a doctor
+// Get Doctors
+router.get("/", doctorController.getDoctors);
+
+// Get Doctor Details
+router.get("/:id", doctorController.getDoctorDetails);
+
+// Get Doctor slots
+router.get("/:id/slots", doctorController.getDoctorSlots);
+
+// Create consultation fees
 router.post(
-  "/:doctorId/schedules",
+  "/fees",
   authorize("DOCTOR"),
-  requestValidate(doctorSchemaValidation.createSchedule),
-  doctorController.createSchedule,
+  requestValidate(doctorSchemaValidation.createOrUpdateConsultationFees),
+  doctorController.createOrUpdateConsultationFees,
 );
 
-// Get schedules
-router.get("/:doctorId/schedules", doctorController.getSchedules);
+// Get consultation fees
+router.get("/:doctorId/fees", doctorController.getConsultationFees);
 
-// Update schedule
-router.put(
-  "/:doctorId/schedules/:id",
+// Active or inactive consultation fees
+router.patch(
+  "/fees/:id",
   authorize("DOCTOR"),
-  requestValidate(doctorSchemaValidation.updateSchedule),
-  doctorController.updateSchedule,
-);
-
-// Delete schedule
-router.delete(
-  "/:doctorId/schedules/:id",
-  authorize("DOCTOR"),
-  doctorController.deleteSchedule,
+  doctorController.updateFeesActivation,
 );
 
 export const doctorRoutes = router;
