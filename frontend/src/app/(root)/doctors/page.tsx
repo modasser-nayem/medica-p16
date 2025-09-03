@@ -1,16 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import Link from "next/link";
 import {
    Search,
    Star,
-   MapPin,
-   Clock,
-   Calendar,
-   Phone,
-   Mail,
-   ArrowRight,
    Heart,
    Brain,
    Baby,
@@ -18,21 +11,20 @@ import {
    Bone,
    Stethoscope,
 } from "lucide-react";
-import PublicHeader from "@/components/shared/Header";
-import PublicFooter from "@/components/shared/Footer";
 import { doctorApi } from "@/redux/api/doctor";
 import Loading from "@/components/ui/loading";
 import ErrorState from "@/components/shared/ErrorState";
 import NoDataAvailable from "@/components/shared/NoDataAvailable";
+import PageHeader from "@/components/shared/PageHeader";
+import DoctorsList from "@/components/doctor/DoctorList";
+import { IGetDoctorsFilter } from "@/types";
+import CustomPagination from "@/components/shared/CustomPagination";
 
 const DoctorsPage = () => {
-   const [searchTerm, setSearchTerm] = useState("");
-   const [selectedDepartment, setSelectedDepartment] = useState("");
-   const [selectedRating, setSelectedRating] = useState("");
+   const [filters, setFilters] = useState<IGetDoctorsFilter>({});
 
-   const { data, isLoading, isError, refetch } = doctorApi.useGetDoctorsQuery(
-      {}
-   );
+   const { data, isLoading, isError, refetch } =
+      doctorApi.useGetDoctorsQuery(filters);
 
    if (isLoading) return <Loading />;
    if (isError || !data?.data) {
@@ -45,8 +37,6 @@ const DoctorsPage = () => {
          />
       );
    }
-
-   console.log(data.data);
 
    const departments = [
       { id: "", name: "All Departments", icon: Stethoscope },
@@ -71,27 +61,18 @@ const DoctorsPage = () => {
    };
 
    return (
-      <div className="min-h-screen bg-gray-50">
+      <div>
          {/* Header */}
-         <PublicHeader />
 
-         <div className="bg-white shadow-sm border-b">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-               <div className="text-center">
-                  <h1 className="text-4xl lg:text-5xl font-display font-bold text-gray-900 mb-6">
-                     Our Doctors
-                  </h1>
-                  <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                     Meet our team of experienced and qualified healthcare
-                     professionals dedicated to providing the best care.
-                  </p>
-               </div>
-            </div>
-         </div>
+         <PageHeader
+            title="Our Doctors"
+            description="Meet our team of experienced and qualified healthcare
+                     professionals dedicated to providing the best care."
+         />
 
-         {/* Search and Filters */}
-         <section className="py-8 bg-white border-b">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+         <div className="container">
+            {/* Search and Filters */}
+            <section className="py-10 border-b border-gray-400">
                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                   {/* Search */}
                   <div className="md:col-span-2">
@@ -100,8 +81,10 @@ const DoctorsPage = () => {
                         <input
                            type="text"
                            placeholder="Search doctors by name or specialization..."
-                           value={searchTerm}
-                           onChange={(e) => setSearchTerm(e.target.value)}
+                           value={filters.search}
+                           onChange={(e) =>
+                              setFilters({ ...filters, search: e.target.value })
+                           }
                            className="input pl-10 w-full"
                         />
                      </div>
@@ -110,8 +93,13 @@ const DoctorsPage = () => {
                   {/* Department Filter */}
                   <div>
                      <select
-                        value={selectedDepartment}
-                        onChange={(e) => setSelectedDepartment(e.target.value)}
+                        value={filters.department}
+                        onChange={(e) =>
+                           setFilters({
+                              ...filters,
+                              department: e.target.value,
+                           })
+                        }
                         className="input"
                      >
                         <option value="">All Departments</option>
@@ -129,132 +117,54 @@ const DoctorsPage = () => {
                   {/* Rating Filter */}
                   <div>
                      <select
-                        value={selectedRating}
-                        onChange={(e) => setSelectedRating(e.target.value)}
+                        value={filters.rating}
+                        onChange={(e) =>
+                           setFilters({
+                              ...filters,
+                              rating: e.target.value
+                                 ? Number(e.target.value)
+                                 : undefined,
+                           })
+                        }
                         className="input"
                      >
                         <option value="">All Ratings</option>
-                        <option value="4.5">4.5+ Stars</option>
-                        <option value="4.0">4.0+ Stars</option>
-                        <option value="3.5">3.5+ Stars</option>
+                        <option value={5}>4.5+ Stars</option>
+                        <option value={4}>4.0+ Stars</option>
+                        <option value={3}>3.5+ Stars</option>
                      </select>
                   </div>
                </div>
-            </div>
-         </section>
-
-         {/* Doctors Grid */}
-         {data.data.length > 0 ? (
-            <section className="py-12">
-               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                  <div className="mb-8">
-                     <p className="text-gray-600">
-                        Showing 57 of {data.data.length} doctors
-                     </p>
-                  </div>
-
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                     {data.data.map((doctor: any) => (
-                        <div
-                           key={doctor.id}
-                           className="card hover:shadow-lg transition-shadow duration-300"
-                        >
-                           <div className="card-body">
-                              <div className="flex items-start space-x-6">
-                                 {/* Doctor Image */}
-                                 <div className="flex-shrink-0">
-                                    <img
-                                       src={
-                                          doctor.user.profileImage ||
-                                          "https://www.google.com/url?sa=i&url=https%3A%2F%2Fpngtree.com%2Fso%2Fdoctor&psig=AOvVaw0WAuQUQyPa_Z1ukL6NZ7Od&ust=1754400671527000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCLDj2vuh8Y4DFQAAAAAdAAAAABAE"
-                                       }
-                                       alt={doctor.user.name}
-                                       className="w-24 h-24 rounded-full object-cover"
-                                    />
-                                 </div>
-
-                                 {/* Doctor Info */}
-                                 <div className="flex-1 min-w-0">
-                                    <div className="flex items-start justify-between mb-2">
-                                       <div>
-                                          <h3 className="text-xl font-semibold text-gray-900 mb-1">
-                                             {doctor.user.name}
-                                          </h3>
-                                          <p className="text-primary-600 font-medium">
-                                             {doctor.specialization}
-                                          </p>
-                                       </div>
-                                       <div className="text-right">
-                                          <div className="flex items-center mb-1">
-                                             {renderStars(5)}
-                                             <span className="ml-1 text-sm text-gray-600">
-                                                ({doctor.totalReviews})
-                                             </span>
-                                          </div>
-                                          <p className="text-lg font-semibold text-primary-600">
-                                             {340}
-                                          </p>
-                                       </div>
-                                    </div>
-
-                                    <p className="text-gray-600 text-sm mb-4">
-                                       {doctor.qualifications}
-                                    </p>
-
-                                    {/* Details */}
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-                                       <div className="flex items-center text-gray-600">
-                                          <MapPin className="h-4 w-4 mr-2" />
-                                          {doctor.isAvailable}
-                                       </div>
-                                       <div className="flex items-center text-gray-600">
-                                          <Clock className="h-4 w-4 mr-2" />
-                                          {doctor.isAvailable}
-                                       </div>
-                                       <div className="flex items-center text-gray-600">
-                                          <Phone className="h-4 w-4 mr-2" />
-                                          {doctor.user.dateOfBirth}
-                                       </div>
-                                    </div>
-
-                                    {/* Action Buttons */}
-                                    <div className="flex gap-3 mt-6">
-                                       <Link
-                                          href={`/appointments?doctor=${doctor.id}`}
-                                       >
-                                          <button className="btn btn-primary">
-                                             Book Appointment
-                                             <Calendar className="ml-2 h-4 w-4" />
-                                          </button>
-                                       </Link>
-                                       <Link href={`/doctors/${doctor.id}`}>
-                                          <button className="btn btn-outline">
-                                             View Profile
-                                             <ArrowRight className="ml-2 h-4 w-4" />
-                                          </button>
-                                       </Link>
-                                    </div>
-                                 </div>
-                              </div>
-                           </div>
-                        </div>
-                     ))}
-                  </div>
-               </div>
             </section>
-         ) : (
-            <NoDataAvailable
-               actionLabel="Clear Filter"
-               onAction={() => {
-                  setSearchTerm("");
-                  setSelectedDepartment("");
-                  setSelectedRating("");
-               }}
-            />
-         )}
 
-         {/* Footer */}
-         <PublicFooter />
+            {/* Doctors Grid */}
+            {data.data.length > 0 ? (
+               <section className="py-12">
+                  <div className="">
+                     <DoctorsList doctors={data.data} />
+                  </div>
+
+                  {/* Pagination */}
+
+                  {data.pagination && (
+                     <div className="mt-10">
+                        <CustomPagination
+                           currentPage={data.pagination.page}
+                           totalPages={data.pagination.totalPage}
+                           onPageChange={(newPage) =>
+                              setFilters({ ...filters, page: newPage })
+                           }
+                        />
+                     </div>
+                  )}
+               </section>
+            ) : (
+               <NoDataAvailable
+                  actionLabel="Clear Filter"
+                  onAction={() => setFilters({})}
+               />
+            )}
+         </div>
       </div>
    );
 };

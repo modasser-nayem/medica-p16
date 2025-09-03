@@ -272,7 +272,7 @@ export default function DynamicForm({
                <button
                   type="submit"
                   className={`${buttonClass} my-2 cursor-pointer border-none bg-primary-600 px-5 py-3 text-sm text-white font-semibold hover:bg-primary-700 disabled:opacity-60 flex items-center justify-center gap-2`}
-                  disabled={methods.formState.isSubmitting}
+                  disabled={isLoading}
                >
                   {isLoading && <LoadingSpinner size={20} />}
                   <span>{submitLabel}</span>

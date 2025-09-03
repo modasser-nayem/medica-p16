@@ -63,11 +63,13 @@ const baseQueryWithInterceptor: BaseQueryFn<
 
          if (!isValidationFailedResponse(result.error.data) && !disableToast) {
             toast.error(
-               (result.error.data as any)?.message || "Something went wrong"
+               (result.error.data as any)?.message || "Something went wrong❗"
             );
          }
 
          return finalResult;
+      } else if (result.error.status !== "CUSTOM_ERROR") {
+         toast.error("Something went wrong❗");
       }
    }
 

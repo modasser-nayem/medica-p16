@@ -1,11 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { MapPin, Phone, Mail, Clock, Send, ArrowLeft } from "lucide-react";
+import { MapPin, Phone, Mail, Clock, Send } from "lucide-react";
 import toast from "react-hot-toast";
-import PublicHeader from "@/components/shared/Header";
-import PublicFooter from "@/components/shared/Footer";
-import Link from "next/link";
+import PageHeader from "@/components/shared/PageHeader";
 
 const ContactPage = () => {
    const [formData, setFormData] = useState({
@@ -40,29 +38,12 @@ const ContactPage = () => {
    return (
       <div className="min-h-screen bg-gray-50">
          {/* Header */}
-         <PublicHeader />
+         <PageHeader
+            title="Contact US"
+            description="Get in touch with our healthcare team. We're here to help."
+         />
 
-         <section className="bg-gradient-to-br from-primary-50 to-indigo-100 py-20">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-               <div className="text-center">
-                  <Link
-                     href="/"
-                     className="inline-flex items-center text-primary-600 hover:text-primary-700 mb-8"
-                  >
-                     <ArrowLeft className="h-4 w-4 mr-2" />
-                     Back to Home
-                  </Link>
-                  <h1 className="text-2xl md:text-4xl font-bold text-gray-900 mb-6">
-                     Contact US
-                  </h1>
-                  <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-                     Get in touch with our healthcare team. We're here to help.
-                  </p>
-               </div>
-            </div>
-         </section>
-
-         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+         <div className="container py-12">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                <div className="card">
                   <div className="card-header">
@@ -294,8 +275,6 @@ const ContactPage = () => {
                </div>
             </div>
          </div>
-
-         <PublicFooter />
       </div>
    );
 };

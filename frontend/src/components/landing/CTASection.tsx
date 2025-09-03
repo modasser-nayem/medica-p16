@@ -7,8 +7,8 @@ import { Button } from "@/components/ui/button";
 
 const CTASection = () => {
    return (
-      <section className="container py-20">
-         <div className="text-center">
+      <section className="py-20">
+         <div className="container text-center">
             <h2 className="text-2xl lg:text-3xl xl:text-4xl font-display font-bold mb-6">
                Ready to Get Started?
             </h2>

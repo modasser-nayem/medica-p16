@@ -25,6 +25,7 @@ import { Button } from "@/components/ui/button";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
 import { logout, selectedUser } from "@/redux/slice/authSlice";
 import { useRouter } from "next/navigation";
+import { authApi } from "@/redux/api/auth";
 
 const ProfileSetting = ({
    children,
@@ -36,6 +37,7 @@ const ProfileSetting = ({
    const user = useAppSelector(selectedUser);
    const dispatch = useAppDispatch();
    const router = useRouter();
+   const [serverLogout, { data, isLoading }] = authApi.useLogoutMutation();
 
    const profileImage = PROFILE_IMAGE(1);
 
@@ -61,8 +63,12 @@ const ProfileSetting = ({
 
    const handleLogout = () => {
       dispatch(logout());
-      router.replace("/");
+      serverLogout();
    };
+
+   if (data?.success) {
+      router.replace("/");
+   }
 
    return (
       <DropdownMenu>
@@ -119,6 +125,7 @@ const ProfileSetting = ({
                   size={"sm"}
                   variant={"outline"}
                   className="w-full"
+                  disabled={isLoading}
                >
                   <LogOut />
                   Log out

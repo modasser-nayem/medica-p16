@@ -10,8 +10,8 @@ import { ILoginUser } from "@/types";
 import { useRouter } from "next/navigation";
 import { setUser } from "@/redux/slice/authSlice";
 import { ROUTES } from "@/constant";
-import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useAppDispatch } from "@/hooks/redux";
 
 const loginSchema = authValidation.loginUser;
 
@@ -33,7 +33,7 @@ const fields: FieldConfig[] = [
 ];
 
 export default function Page() {
-   const [defaultUser, setDefaultUser] = useState({});
+   const dispatch = useAppDispatch();
    const router = useRouter();
    const [loginUser, { data, isLoading }] = authApi.useLoginMutation();
 
@@ -41,12 +41,8 @@ export default function Page() {
       loginUser(value);
    };
 
-   useEffect(() => {
-      setDefaultUser(defaultUser);
-   }, [defaultUser]);
-
    if (data?.success) {
-      setUser(data.data);
+      dispatch(setUser(data.data));
       router.push(ROUTES.DASHBOARD(data.data.role));
    }
 
@@ -64,6 +60,7 @@ export default function Page() {
       <div className="flex flex-col md:flex-row items-center gap-16">
          <div className="hidden md:block">
             <Image
+               priority
                src="/login.svg"
                alt="signup"
                width={400}
