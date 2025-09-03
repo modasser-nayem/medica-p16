@@ -5,12 +5,26 @@ import SystemOverview from "@/components/admin/SystemOverview";
 import AdminStats from "./stats/AdminStats";
 import Loading from "@/components/ui/loading";
 import { analyticsApi } from "@/redux/api/analytics";
+import ErrorState from "@/components/shared/ErrorState";
 
 const AdminDashboard = () => {
-   const { data: statsData, isLoading } = analyticsApi.useAdminStatsQuery();
+   const {
+      data: statsData,
+      isLoading,
+      isError,
+      refetch,
+   } = analyticsApi.useAdminStatsQuery();
 
-   if (isLoading) {
-      return <div>Loading...</div>;
+   if (isLoading) return <Loading />;
+   if (isError || !statsData?.data) {
+      return (
+         <ErrorState
+            title="Unable to load fees"
+            description="There was a problem fetching consultation fees."
+            onRetry={() => refetch()}
+            isLoading={isLoading}
+         />
+      );
    }
 
    return (
@@ -24,11 +38,7 @@ const AdminDashboard = () => {
 
          {/* Stats Cards */}
          <div>
-            {statsData?.data ? (
-               <AdminStats data={statsData.data} />
-            ) : (
-               <Loading />
-            )}
+            <AdminStats data={statsData.data} />
          </div>
 
          {/*  Filters */}

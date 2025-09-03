@@ -6,6 +6,9 @@ export const APP_DESCRIPTION = "Hospital Management System";
 export const PROFILE_IMAGE = (no = 1, gender?: "men" | "women") =>
    `https://randomuser.me/api/portraits/${gender ? gender : "men"}/${no}.jpg`;
 
+export const RANDOM_IMAGE =
+   "https://www.bing.com/th/id/OIP.2PNeqoXRvTli6WRVXkxZKwHaE8?w=285&h=211&c=8&rs=1&qlt=90&o=6&dpr=1.4&pid=3.1&rm=2";
+
 export const USER_ROLES = {
    PATIENT: "PATIENT",
    DOCTOR: "DOCTOR",

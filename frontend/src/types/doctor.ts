@@ -120,12 +120,6 @@ export interface IDoctorDetails {
    qualification: string | null;
    experience: number | null;
    userId: string;
-   fees: {
-      type: ConsultationType;
-      id: string;
-      isActive: boolean;
-      fee: number;
-      currency: string;
-   }[];
+   fees: IConsultationFee[];
    totalReviews: number;
 }

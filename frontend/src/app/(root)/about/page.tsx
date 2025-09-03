@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Heart, Shield, Users, Award, Clock, ArrowLeft } from "lucide-react";
 import PublicHeader from "@/components/shared/Header";
 import PublicFooter from "@/components/shared/Footer";
+import PageHeader from "@/components/shared/PageHeader";
 
 const AboutPage: React.FC = () => {
    const values = [
@@ -42,34 +43,16 @@ const AboutPage: React.FC = () => {
    ];
 
    return (
-      <div className="min-h-screen bg-white">
-         {/* Header */}
-         <PublicHeader />
-
+      <div className="bg-white">
          {/* Hero Section */}
-         <section className="bg-gradient-to-br from-primary-50 to-indigo-100 py-20">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-               <div className="text-center">
-                  <Link
-                     href="/"
-                     className="inline-flex items-center text-primary-600 hover:text-primary-700 mb-8"
-                  >
-                     <ArrowLeft className="h-4 w-4 mr-2" />
-                     Back to Home
-                  </Link>
-                  <h1 className="text-2xl md:text-4xl font-bold text-gray-900 mb-6">
-                     About Medica
-                  </h1>
-                  <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-                     Leading the way in comprehensive healthcare management with
-                     cutting-edge technology and compassionate care.
-                  </p>
-               </div>
-            </div>
-         </section>
+         <PageHeader
+            title="About Medica"
+            description=" Leading the way in comprehensive healthcare management with
+                     cutting-edge technology and compassionate care."
+         />
 
          {/* Mission & Vision */}
-         <section className="py-20 bg-white">
+         <section className=" container py-20 bg-white">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                   <div>
@@ -108,7 +91,7 @@ const AboutPage: React.FC = () => {
          </section>
 
          {/* Values */}
-         <section className="py-20 bg-gray-50">
+         <section className=" container py-20 bg-gray-50">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                <div className="text-center mb-16">
                   <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
@@ -141,7 +124,7 @@ const AboutPage: React.FC = () => {
          </section>
 
          {/* Achievements */}
-         <section className="py-20 bg-primary-600">
+         <section className=" container py-20 bg-primary-600">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                <div className="text-center mb-16">
                   <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
@@ -170,7 +153,7 @@ const AboutPage: React.FC = () => {
          </section>
 
          {/* History */}
-         <section className="py-20 bg-white">
+         <section className=" container py-20 bg-white">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                <div className="text-center mb-16">
                   <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
@@ -269,9 +252,6 @@ const AboutPage: React.FC = () => {
                </div>
             </div>
          </section>
-
-         {/* Footer */}
-         <PublicFooter />
       </div>
    );
 };

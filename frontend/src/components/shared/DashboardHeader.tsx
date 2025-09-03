@@ -15,7 +15,7 @@ const DashboardHeader: React.FC = () => {
    const dispatch = useAppDispatch();
 
    const handleLogout = () => {
-      logoutUser({});
+      logoutUser();
    };
 
    if (isSuccess) {

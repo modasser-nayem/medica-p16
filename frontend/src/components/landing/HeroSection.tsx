@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 export const HeroSection = () => (
    <section className="relative bg-gradient-to-br from-primary-50 via-white to-secondary-50 overflow-hidden">
       <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32">
+      <div className="relative container py-20 lg:py-32">
          <div className="text-center lg:text-left lg:grid lg:grid-cols-2 lg:gap-12 lg:items-center">
             <div className="space-y-8">
                <div className="space-y-4">

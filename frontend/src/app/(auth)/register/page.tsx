@@ -78,6 +78,7 @@ export default function Page() {
       <div className="flex flex-col lg:flex-row items-center gap-16">
          <div className="hidden lg:block">
             <Image
+               priority
                src="/register.svg"
                alt="signup"
                width={400}

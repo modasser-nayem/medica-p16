@@ -4,14 +4,27 @@ import React from "react";
 import Loading from "@/components/ui/loading";
 import DoctorStats from "./stats/DoctorStats";
 import { analyticsApi } from "@/redux/api/analytics";
+import ErrorState from "@/components/shared/ErrorState";
 
 const DoctorDashboard = () => {
-   const { data: statsData, isLoading } = analyticsApi.useDoctorStatsQuery();
+   const {
+      data: statsData,
+      isLoading,
+      isError,
+      refetch,
+   } = analyticsApi.useDoctorStatsQuery();
 
-   if (isLoading) {
-      return <div>Loading...</div>;
+   if (isLoading) return <Loading />;
+   if (isError || !statsData?.data) {
+      return (
+         <ErrorState
+            title="Unable to load fees"
+            description="There was a problem fetching consultation fees."
+            onRetry={() => refetch()}
+            isLoading={isLoading}
+         />
+      );
    }
-
    return (
       <div className="space-y-6">
          <div>
@@ -25,11 +38,7 @@ const DoctorDashboard = () => {
 
          {/* Stats Cards */}
          <div>
-            {statsData?.data ? (
-               <DoctorStats data={statsData.data} />
-            ) : (
-               <Loading />
-            )}
+            <DoctorStats data={statsData.data} />
          </div>
       </div>
    );
