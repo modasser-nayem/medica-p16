@@ -55,8 +55,10 @@ const Page = () => {
          <Video size={24} />
       );
 
+   const fees = data.data;
+
    return (
-      <div className="p-6">
+      <div>
          {/* Header with action button */}
          <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold">Consultation Fees</h2>
@@ -67,7 +69,7 @@ const Page = () => {
                <Button
                   size="sm"
                   className="rounded-full"
-                  disabled={data.data.length >= 3 ? true : false}
+                  disabled={fees.length >= 3 ? true : false}
                >
                   <Plus /> Add New Fee
                </Button>
@@ -75,7 +77,7 @@ const Page = () => {
          </div>
 
          {/* Fees Grid */}
-         {data.data.length === 0 ? (
+         {fees.length === 0 ? (
             <NoDataAvailable>
                <AddConsultationFee
                   dialogTitle="Add New Fee"
@@ -89,7 +91,7 @@ const Page = () => {
             </NoDataAvailable>
          ) : (
             <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-               {data.data.map((fee) => (
+               {fees.map((fee) => (
                   <Card
                      key={fee.id}
                      className="shadow-md bg-gray-800 text-gray-300 border border-gray-300 rounded-2xl"

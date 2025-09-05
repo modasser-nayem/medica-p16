@@ -36,7 +36,7 @@ const ContactPage = () => {
    };
 
    return (
-      <div className="min-h-screen bg-gray-50">
+      <div className=" bg-gray-50">
          {/* Header */}
          <PageHeader
             title="Contact US"

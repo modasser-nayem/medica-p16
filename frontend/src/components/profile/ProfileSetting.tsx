@@ -1,7 +1,6 @@
 "use client";
 
-import { PROFILE_IMAGE, ROUTES } from "@/constant";
-import Image from "next/image";
+import { ROUTES } from "@/constant";
 import React from "react";
 import {
    DropdownMenu,
@@ -26,6 +25,7 @@ import { useAppDispatch, useAppSelector } from "@/hooks/redux";
 import { logout, selectedUser } from "@/redux/slice/authSlice";
 import { useRouter } from "next/navigation";
 import { authApi } from "@/redux/api/auth";
+import UserAvatar from "../shared/UserAvatar";
 
 const ProfileSetting = ({
    children,
@@ -38,8 +38,6 @@ const ProfileSetting = ({
    const dispatch = useAppDispatch();
    const router = useRouter();
    const [serverLogout, { data, isLoading }] = authApi.useLogoutMutation();
-
-   const profileImage = PROFILE_IMAGE(1);
 
    const navItem = [
       {
@@ -75,27 +73,24 @@ const ProfileSetting = ({
          <DropdownMenuTrigger asChild>
             {children && withImage ? (
                <div className="flex gap-3">
-                  <Image
-                     title="Click"
-                     src={user?.profileImage || profileImage}
-                     alt="profile"
-                     className="h-10 w-10 rounded-full cursor-pointer"
-                     width={40}
-                     height={40}
+                  <UserAvatar
+                     className="cursor-pointer"
+                     src={user?.profileImage}
+                     alt={user?.name}
                   />
+
                   {children}
                </div>
             ) : children ? (
                children
             ) : (
-               <Image
-                  title="Click"
-                  src={user?.profileImage || profileImage}
-                  alt="profile"
-                  className="h-10 w-10 rounded-full cursor-pointer"
-                  width={40}
-                  height={40}
-               />
+               <div>
+                  <UserAvatar
+                     className="cursor-pointer"
+                     src={user?.profileImage}
+                     alt={user?.name}
+                  />
+               </div>
             )}
          </DropdownMenuTrigger>
          <DropdownMenuContent

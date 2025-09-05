@@ -2,7 +2,7 @@
 
 import ErrorState from "@/components/shared/ErrorState";
 import Loading from "@/components/ui/loading";
-import { RANDOM_IMAGE, ROUTES } from "@/constant";
+import { DOCTOR_PROFILE_IMG, ROUTES } from "@/constant";
 import { doctorApi } from "@/redux/api/doctor";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
@@ -113,7 +113,7 @@ const DoctorDetailsPage = () => {
                <div className="order-1 lg:order-2 flex-shrink-0">
                   <Image
                      priority={true}
-                     src={doctor.profileImage || RANDOM_IMAGE}
+                     src={doctor.profileImage || DOCTOR_PROFILE_IMG}
                      alt={doctor.name}
                      width={400}
                      height={400}
@@ -169,7 +169,7 @@ const DoctorDetailsPage = () => {
             </div>
 
             <Button
-               className="mt-5 md:-mt-3 px-6 py-5 rounded-md shadow-lg"
+               className="mt-5 px-6 py-5 rounded-md shadow-lg"
                onClick={handleAppointment}
             >
                <Calendar /> Book Appointment <ArrowRight />
@@ -178,7 +178,7 @@ const DoctorDetailsPage = () => {
             {/* Consultation Fees */}
             <div>
                <ConsultationFees
-                  fees={doctor.fees}
+                  fees={doctor.fees.filter((item) => item.isActive === true)}
                   onFeeSelect={(value) => {
                      setFeeError("");
                      setAppointmentData({
@@ -240,7 +240,7 @@ const DoctorDetailsPage = () => {
             <div className="flex gap-4 items-center border rounded-lg p-4 bg-muted/50">
                <Image
                   priority
-                  src={doctor.profileImage || RANDOM_IMAGE}
+                  src={doctor.profileImage || DOCTOR_PROFILE_IMG}
                   alt={doctor.name}
                   width={80}
                   height={80}

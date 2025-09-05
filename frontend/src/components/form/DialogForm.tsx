@@ -301,7 +301,7 @@ export function DialogForm({
                         }
                      })}
                   </div>
-                  <DialogFooter className="mt-5">
+                  <DialogFooter className="mt-5 gap-3">
                      <DialogClose asChild>
                         <Button
                            variant="outline"

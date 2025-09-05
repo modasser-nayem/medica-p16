@@ -5,6 +5,7 @@ import ErrorState from "@/components/shared/ErrorState";
 import { format, parse } from "date-fns";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import NoDataAvailable from "../shared/NoDataAvailable";
 
 type DoctorScheduleSlotsProps = {
    doctorId: string;
@@ -33,6 +34,10 @@ const DoctorScheduleSlots = ({
    }
 
    const schedules = data.data;
+
+   if (schedules.length === 0) {
+      return <NoDataAvailable />;
+   }
 
    return (
       <div className="space-y-6">

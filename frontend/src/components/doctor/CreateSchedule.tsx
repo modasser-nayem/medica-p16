@@ -41,7 +41,7 @@ const CreateSchedule = ({ children }: { children?: React.ReactNode }) => {
       {
          name: "slotDurationMinutes",
          type: "number",
-         label: "Slot Duration",
+         label: "Slot Duration Minutes",
          required: true,
          placeholder: "e.g 30 (01-60)",
       },
@@ -61,6 +61,7 @@ const CreateSchedule = ({ children }: { children?: React.ReactNode }) => {
             openButton={children}
             openTitle="Create Schedule"
             dialogTitle="Create Schedule"
+            defaultValues={{ slotDurationMinutes: 30 }}
             schema={schema}
             fields={fields}
             submitLabel="Create"

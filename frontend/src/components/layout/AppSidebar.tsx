@@ -125,7 +125,7 @@ const AppSidebar = () => {
    return (
       <Sidebar
          collapsible="icon"
-         className="bg-primary text-primary-foreground/85 border-primary"
+         className="!bg-primary text-primary-foreground/85 border-primary"
       >
          {/* Header */}
          <SidebarHeader className="px-6 py-5">
