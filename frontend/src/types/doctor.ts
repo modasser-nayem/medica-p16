@@ -88,15 +88,13 @@ export interface IGetDoctorsFilter extends IPaginationQuery {
 
 export interface IDoctor {
    id: string;
-   specialization: string;
-   qualifications: string;
+   specialties: string;
+   qualification: string;
    experience: number;
-   isAvailable: boolean;
    createdAt: string;
    user: {
       id: string;
       name: string;
-      dateOfBirth: string;
       profileImage: any;
    };
    department: {

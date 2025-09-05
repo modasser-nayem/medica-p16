@@ -8,7 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Star } from "lucide-react";
 import Link from "next/link";
-import { RANDOM_IMAGE, ROUTES } from "@/constant";
+import { DOCTOR_PROFILE_IMG, ROUTES } from "@/constant";
 import { IDoctor } from "@/types";
 import Image from "next/image";
 
@@ -26,7 +26,8 @@ export default function DoctorsList({ doctors }: DoctorsListProps) {
             >
                {/* Big Image */}
                <Image
-                  src={doctor.user.profileImage || RANDOM_IMAGE}
+                  priority={true}
+                  src={doctor.user.profileImage || DOCTOR_PROFILE_IMG}
                   alt={doctor.user.name}
                   className="w-full h-52"
                   width={250}
@@ -39,11 +40,11 @@ export default function DoctorsList({ doctors }: DoctorsListProps) {
                   </CardTitle>
                   <p className="text-sm text-foreground/70">
                      Consultant -{" "}
-                     {doctor.specialization ||
+                     {doctor.specialties ||
                         "Anesthesiology & Hyperbaric Physician"}
                   </p>
                   <p className="text-sm font-medium text-foreground">
-                     {doctor.qualifications || "MBBS (CMC), DA"}
+                     {doctor.qualification || "MBBS (CMC), DA"}
                   </p>
                </CardHeader>
 

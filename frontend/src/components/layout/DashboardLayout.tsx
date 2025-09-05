@@ -7,7 +7,7 @@ import ProfileSetting from "@/components/profile/ProfileSetting";
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
    return (
-      <SidebarProvider className="bg-primary">
+      <SidebarProvider>
          <div className="flex h-screen w-screen overflow-hidden bg-gray-50">
             {/* Sidebar */}
             <AppSidebar />

@@ -21,7 +21,10 @@ const createSchedule = z
             /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/,
             "Invalid time format (HH:MM)"
          ),
-      slotDurationMinutes: z.number().optional(),
+      slotDurationMinutes: z
+         .number()
+         .min(30, "Duration Can't be less then 30 minutes")
+         .optional(),
    })
    .refine(
       (data) => {
@@ -54,7 +57,10 @@ const updateSchedule = z
             "Invalid time format (HH:MM)"
          ),
       isActive: z.boolean().optional(),
-      slotDurationMinutes: z.number().optional(),
+      slotDurationMinutes: z
+         .number()
+         .min(30, "Duration Can't be less then 30 minutes")
+         .optional(),
    })
    .refine(
       (data) => {

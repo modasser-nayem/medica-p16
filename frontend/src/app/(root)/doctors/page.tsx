@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import {
    Search,
-   Star,
    Heart,
    Brain,
    Baby,
@@ -46,19 +45,6 @@ const DoctorsPage = () => {
       { id: "ophthalmology", name: "Ophthalmology", icon: Eye },
       { id: "orthopedics", name: "Orthopedics", icon: Bone },
    ];
-
-   const renderStars = (rating: number) => {
-      return Array.from({ length: 5 }, (_, i) => (
-         <Star
-            key={i}
-            className={`h-4 w-4 ${
-               i < Math.floor(rating)
-                  ? "text-yellow-400 fill-current"
-                  : "text-gray-300"
-            }`}
-         />
-      ));
-   };
 
    return (
       <div>

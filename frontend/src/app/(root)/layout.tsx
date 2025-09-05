@@ -6,7 +6,7 @@ const layout = ({ children }: { children: React.ReactNode }) => {
    return (
       <div>
          <PublicHeader />
-         {children}
+         <div className="min-h-screen">{children}</div>
          <PublicFooter />
       </div>
    );

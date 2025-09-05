@@ -9,6 +9,7 @@ import { Plus } from "lucide-react";
 import React from "react";
 import ScheduleTable from "@/components/doctor/ScheduleTable";
 import DoctorScheduleSlots from "@/components/doctor/DoctorScheduleSlots";
+import NoDataAvailable from "@/components/shared/NoDataAvailable";
 
 const page = () => {
    const { data, isLoading, isError, refetch } =
@@ -26,6 +27,8 @@ const page = () => {
       );
    }
 
+   const schedules = data.data;
+
    const selectedSlot = () => {};
 
    return (
@@ -37,28 +40,44 @@ const page = () => {
                <Button
                   size="sm"
                   className="rounded-full"
-                  disabled={data.data.length >= 5 ? true : false}
+                  disabled={schedules.length >= 5 ? true : false}
                >
                   <Plus /> Add Schedule
                </Button>
             </CreateSchedule>
          </div>
 
-         {/* Schedule Table */}
-         <div>
-            <ScheduleTable data={data.data} />
-         </div>
-
-         {/* Schedule Slots */}
-         {data.data.length >= 1 && (
+         {schedules.length === 0 ? (
+            <NoDataAvailable>
+               <CreateSchedule>
+                  <Button
+                     size="sm"
+                     className="rounded-full"
+                     disabled={schedules.length >= 5 ? true : false}
+                  >
+                     <Plus /> Add Schedule
+                  </Button>
+               </CreateSchedule>
+            </NoDataAvailable>
+         ) : (
             <div>
-               <h2 className="text-xl font-semibold mt-5 py-5">
-                  Schedule Slots
-               </h2>
-               <DoctorScheduleSlots
-                  doctorId={data.data[0].doctorId}
-                  onSlotSelect={selectedSlot}
-               />
+               {/* Schedule Table */}
+               <div className="w-[380px] md:w-full">
+                  <ScheduleTable data={schedules} />
+               </div>
+
+               {/* Schedule Slots */}
+               {schedules.length >= 1 && (
+                  <div>
+                     <h2 className="text-xl font-semibold mt-5 py-5">
+                        Schedule Slots
+                     </h2>
+                     <DoctorScheduleSlots
+                        doctorId={data.data[0].doctorId}
+                        onSlotSelect={selectedSlot}
+                     />
+                  </div>
+               )}
             </div>
          )}
       </div>
