@@ -5,7 +5,7 @@ import ErrorState from "@/components/shared/ErrorState";
 import { format, parse } from "date-fns";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import NoDataAvailable from "../shared/NoDataAvailable";
+import NoDataAvailable from "@/components/shared/NoDataAvailable";
 
 type DoctorScheduleSlotsProps = {
    doctorId: string;

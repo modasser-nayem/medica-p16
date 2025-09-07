@@ -18,12 +18,15 @@ import PageHeader from "@/components/shared/PageHeader";
 import DoctorsList from "@/components/doctor/DoctorList";
 import { IGetDoctorsFilter } from "@/types";
 import CustomPagination from "@/components/shared/CustomPagination";
+import { departmentApi } from "@/redux/api/department";
+import Image from "next/image";
 
 const DoctorsPage = () => {
    const [filters, setFilters] = useState<IGetDoctorsFilter>({});
 
    const { data, isLoading, isError, refetch } =
       doctorApi.useGetDoctorsQuery(filters);
+   const { data: departmentData } = departmentApi.useGetDepartmentsQuery();
 
    if (isLoading) return <Loading />;
    if (isError || !data?.data) {
@@ -37,14 +40,10 @@ const DoctorsPage = () => {
       );
    }
 
-   const departments = [
-      { id: "", name: "All Departments", icon: Stethoscope },
-      { id: "cardiology", name: "Cardiology", icon: Heart },
-      { id: "neurology", name: "Neurology", icon: Brain },
-      { id: "pediatrics", name: "Pediatrics", icon: Baby },
-      { id: "ophthalmology", name: "Ophthalmology", icon: Eye },
-      { id: "orthopedics", name: "Orthopedics", icon: Bone },
-   ];
+   const departments = departmentData?.data.map((dept) => ({
+      id: dept.id,
+      name: dept.name,
+   }));
 
    return (
       <div>
@@ -89,7 +88,7 @@ const DoctorsPage = () => {
                         className="input"
                      >
                         <option value="">All Departments</option>
-                        {departments.slice(1).map((dept) => (
+                        {departments?.slice(1).map((dept) => (
                            <option
                               key={dept.id}
                               value={dept.id}
@@ -115,41 +114,43 @@ const DoctorsPage = () => {
                         className="input"
                      >
                         <option value="">All Ratings</option>
-                        <option value={5}>4.5+ Stars</option>
-                        <option value={4}>4.0+ Stars</option>
-                        <option value={3}>3.5+ Stars</option>
+                        <option value={5}>5 Stars</option>
+                        <option value={4}>4 Stars</option>
+                        <option value={3}>3 Stars</option>
                      </select>
                   </div>
                </div>
             </section>
 
             {/* Doctors Grid */}
-            {data.data.length > 0 ? (
-               <section className="py-12">
-                  <div className="">
-                     <DoctorsList doctors={data.data} />
-                  </div>
-
-                  {/* Pagination */}
-
-                  {data.pagination && (
-                     <div className="mt-10">
-                        <CustomPagination
-                           currentPage={data.pagination.page}
-                           totalPages={data.pagination.totalPage}
-                           onPageChange={(newPage) =>
-                              setFilters({ ...filters, page: newPage })
-                           }
-                        />
+            <section className="py-12">
+               {data.data.length > 0 ? (
+                  <>
+                     <div className="">
+                        <DoctorsList doctors={data.data} />
                      </div>
-                  )}
-               </section>
-            ) : (
-               <NoDataAvailable
-                  actionLabel="Clear Filter"
-                  onAction={() => setFilters({})}
-               />
-            )}
+
+                     {/* Pagination */}
+
+                     {data.pagination && (
+                        <div className="mt-10">
+                           <CustomPagination
+                              currentPage={data.pagination.page}
+                              totalPages={data.pagination.totalPage}
+                              onPageChange={(newPage) =>
+                                 setFilters({ ...filters, page: newPage })
+                              }
+                           />
+                        </div>
+                     )}
+                  </>
+               ) : (
+                  <NoDataAvailable
+                     actionLabel="Clear Filter"
+                     onAction={() => setFilters({})}
+                  />
+               )}
+            </section>
          </div>
       </div>
    );

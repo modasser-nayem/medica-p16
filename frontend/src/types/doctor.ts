@@ -119,5 +119,9 @@ export interface IDoctorDetails {
    experience: number | null;
    userId: string;
    fees: IConsultationFee[];
+   department?: {
+      id: string;
+      name: string;
+   } | null;
    totalReviews: number;
 }

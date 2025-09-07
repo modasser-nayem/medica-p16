@@ -7,8 +7,8 @@ import {
    QueryReturnValue,
 } from "@reduxjs/toolkit/query/react";
 import { toast } from "react-hot-toast";
-import { logout } from "../slice/authSlice";
-import { FailedResponse, SuccessResponse } from "../../types/api";
+import { logout } from "@/redux/slice/authSlice";
+import { FailedResponse, SuccessResponse } from "@/types/api";
 
 const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 

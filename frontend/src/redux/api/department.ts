@@ -1,12 +1,15 @@
 import { SuccessResponse } from "@/types/api";
 import { baseApi } from "./base";
-import { ICreateDepartment, IDepartment } from "@/types";
+import { ICreateDepartment, IDepartment, IUpdateDepartment } from "@/types";
 import { API_ENDPOINTS, API_METHODS } from "@/constant";
 
 export const departmentApi = baseApi.injectEndpoints({
    endpoints: (builder) => ({
-      createDepartment: builder.mutation<SuccessResponse<IDepartment>, any>({
-         query: (data: ICreateDepartment) => ({
+      createDepartment: builder.mutation<
+         SuccessResponse<IDepartment>,
+         ICreateDepartment
+      >({
+         query: (data) => ({
             url: API_ENDPOINTS.DEPARTMENT.CREATE,
             method: API_METHODS.POST,
             body: data,
@@ -20,13 +23,16 @@ export const departmentApi = baseApi.injectEndpoints({
          providesTags: ["department"],
       }),
 
-      getSingleDepartment: builder.query<SuccessResponse<IDepartment>, any>({
-         query: (id: string) => API_ENDPOINTS.DEPARTMENT.DETAILS(id),
+      getSingleDepartment: builder.query<SuccessResponse<IDepartment>, string>({
+         query: (id) => API_ENDPOINTS.DEPARTMENT.DETAILS(id),
          extraOptions: { disableToast: true },
       }),
 
-      updateDepartment: builder.mutation<SuccessResponse<IDepartment>, any>({
-         query: ({ data, id }: { data: ICreateDepartment; id: string }) => ({
+      updateDepartment: builder.mutation<
+         SuccessResponse<IDepartment>,
+         { data: IUpdateDepartment; id: string }
+      >({
+         query: ({ data, id }) => ({
             url: API_ENDPOINTS.DEPARTMENT.UPDATE(id),
             method: API_METHODS.PUT,
             body: data,
@@ -34,8 +40,8 @@ export const departmentApi = baseApi.injectEndpoints({
          invalidatesTags: ["department"],
       }),
 
-      deleteDepartment: builder.mutation<SuccessResponse<IDepartment>, any>({
-         query: (departmentId: string) => ({
+      deleteDepartment: builder.mutation<SuccessResponse<IDepartment>, string>({
+         query: (departmentId) => ({
             url: API_ENDPOINTS.DEPARTMENT.DELETE(departmentId),
             method: API_METHODS.DELETE,
          }),

@@ -1,4 +1,4 @@
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import {
    Dialog,
    DialogContent,
@@ -12,14 +12,18 @@ export default function ConfirmationDialog({
    openConfirmDialog,
    setOpenConfirmDialog,
    dialogTitle = "Confirm",
+   dialogHint,
    children,
    onConfirmed,
+   isLoading,
 }: {
    openConfirmDialog: boolean;
    setOpenConfirmDialog: (value: boolean) => void;
    dialogTitle?: string;
+   dialogHint?: string;
    children: React.ReactNode;
    onConfirmed: () => void;
+   isLoading?: boolean;
 }) {
    return (
       <Dialog
@@ -31,7 +35,9 @@ export default function ConfirmationDialog({
                <DialogTitle>{dialogTitle}</DialogTitle>
             </DialogHeader>
             <DialogDescription className="text-sm font-semibold text-gray-600">
-               Please review the details before confirmed.
+               {dialogHint
+                  ? dialogHint
+                  : "Please review the details before confirmed."}
             </DialogDescription>
             <div>{children}</div>
             <DialogFooter className="flex gap-2 justify-end">
@@ -42,6 +48,7 @@ export default function ConfirmationDialog({
                   Cancel
                </Button>
                <Button
+                  disabled={isLoading}
                   onClick={() => {
                      onConfirmed();
                      setOpenConfirmDialog(false);
