@@ -1,4 +1,4 @@
-import { BLOOD_GROUP_OPTIONS } from "./../constant/index";
+import { BLOOD_GROUP_OPTIONS } from "@/constant/index";
 import { GENDER_OPTIONS } from "@/constant";
 import { IAppointment } from "./appointment";
 import { IDepartment } from "./department";

@@ -137,7 +137,7 @@ const DoctorDetailsPage = () => {
                      <div>
                         <p className="text-gray-500 text-sm">Specialties</p>
                         <p className="text-base font-semibold">
-                           {"Anesthesiology"} {/* TODO:Department name */}
+                           {doctor.department?.name || "Anesthesiology"}
                         </p>
                      </div>
                      <div>

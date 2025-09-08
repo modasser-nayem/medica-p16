@@ -6,6 +6,7 @@ import { IDoctorProfile, IUpdateDoctorProfile } from "@/types";
 import { BLOOD_GROUP_OPTIONS } from "@/constant";
 import { userValidation } from "@/validation/user";
 import { userApi } from "@/redux/api/user";
+import { departmentApi } from "@/redux/api/department";
 
 const fieldProps = {
    className:
@@ -17,15 +18,20 @@ export default function DoctorPersonalInformation({
 }: {
    profile: IDoctorProfile;
 }) {
+   const { data: departmentData } = departmentApi.useGetDepartmentsQuery();
+
+   const departments =
+      departmentData?.data.map((dept) => ({
+         label: dept.name,
+         value: dept.id,
+      })) || [];
+
    const fields: FieldConfig[] = [
       {
          name: "departmentId",
          type: "select",
          label: "Department",
-         options: [
-            { label: "Select", value: "" },
-            ...BLOOD_GROUP_OPTIONS.map((opt) => opt),
-         ],
+         options: [{ label: "Select", value: "" }, ...departments],
          props: fieldProps,
       },
       {

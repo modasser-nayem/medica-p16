@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { IDepartment, ICreateDepartment, IUpdateDepartment } from "../../types";
+import { IDepartment, ICreateDepartment, IUpdateDepartment } from "@/types";
 import { X, Building2 } from "lucide-react";
 
 interface DepartmentModalProps {

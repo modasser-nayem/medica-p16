@@ -30,16 +30,16 @@ const PublicFooter = () => {
       company: [
          { name: "About Us", href: "/about" },
          { name: "Our Doctors", href: "/doctors" },
-         { name: "Careers", href: "/careers" },
-         { name: "News & Updates", href: "/news" },
+         { name: "Careers", href: "/" },
+         { name: "News & Updates", href: "/" },
          { name: "Contact Us", href: "/contact" },
       ],
       support: [
-         { name: "Help Center", href: "/help" },
-         { name: "Patient Portal", href: "/portal" },
-         { name: "Insurance", href: "/insurance" },
-         { name: "Privacy Policy", href: "/privacy" },
-         { name: "Terms of Service", href: "/terms" },
+         { name: "Help Center", href: "/" },
+         { name: "Patient Portal", href: "/" },
+         { name: "Insurance", href: "/" },
+         { name: "Privacy Policy", href: "/" },
+         { name: "Terms of Service", href: "/" },
       ],
    };
 
@@ -200,19 +200,19 @@ const PublicFooter = () => {
                </div>
                <div className="flex space-x-6 text-sm">
                   <Link
-                     href="/privacy"
+                     href="/"
                      className="hover:text-primary-400 transition-colors duration-200"
                   >
                      Privacy Policy
                   </Link>
                   <Link
-                     href="/terms"
+                     href="/"
                      className="hover:text-primary-400 transition-colors duration-200"
                   >
                      Terms of Service
                   </Link>
                   <Link
-                     href="/cookies"
+                     href="/"
                      className="hover:text-primary-400 transition-colors duration-200"
                   >
                      Cookie Policy

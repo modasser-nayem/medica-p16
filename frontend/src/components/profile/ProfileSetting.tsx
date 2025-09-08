@@ -25,7 +25,7 @@ import { useAppDispatch, useAppSelector } from "@/hooks/redux";
 import { logout, selectedUser } from "@/redux/slice/authSlice";
 import { useRouter } from "next/navigation";
 import { authApi } from "@/redux/api/auth";
-import UserAvatar from "../shared/UserAvatar";
+import UserAvatar from "@/components/shared/UserAvatar";
 
 const ProfileSetting = ({
    children,

@@ -8,6 +8,7 @@ const createDepartment = z.object({
    description: z
       .string()
       .min(10, "Description must be at least 10 characters")
+      .max(50, "Description can't be gather then 50 characters")
       .optional(),
 });
 
@@ -20,6 +21,7 @@ const updateDepartment = z.object({
    description: z
       .string()
       .min(10, "Description must be at least 10 characters")
+      .max(50, "Description can't be gather then 50 characters")
       .optional(),
 });
 

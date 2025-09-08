@@ -54,7 +54,7 @@ const FileUploadOrUrl = React.forwardRef<HTMLInputElement, Props>(
                <Image
                   src={
                      (url.includes("https://") && url) ||
-                     "https://th.bing.com/th/id/OIP.0iqvqUM-_MntTZp4CMBaigHaEK?w=290&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3"
+                     "/no_image_available.jpg"
                   }
                   alt="Image"
                   width={140}
