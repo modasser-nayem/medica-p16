@@ -43,7 +43,7 @@ export const DepartmentsSection = () => {
             {departments.length === 0 ? (
                <NoDataAvailable />
             ) : (
-               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-clos-4 gap-6">
+               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                   {departments.map((dept, index) => {
                      return (
                         <div

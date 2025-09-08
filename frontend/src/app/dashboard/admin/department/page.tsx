@@ -2,21 +2,12 @@
 
 import CreateDepartment from "@/components/admin/CreateDepartment";
 import DepartmentCard from "@/components/admin/DepartmentCard";
-import UpdateDepartment from "@/components/admin/UpdateDepartment";
 import ErrorState from "@/components/shared/ErrorState";
 import NoDataAvailable from "@/components/shared/NoDataAvailable";
 import { Button } from "@/components/ui/button";
-import {
-   Card,
-   CardContent,
-   CardFooter,
-   CardHeader,
-   CardTitle,
-} from "@/components/ui/card";
 import Loading from "@/components/ui/loading";
 import { departmentApi } from "@/redux/api/department";
-import { Delete, DeleteIcon, Edit, Plus, Trash } from "lucide-react";
-import Image from "next/image";
+import { Plus } from "lucide-react";
 import React from "react";
 
 const DepartmentPage = () => {
