@@ -5,6 +5,7 @@ import React from "react";
 import { Provider } from "react-redux";
 import AuthProvider from "./AuthProvider";
 import { PersistGate } from "redux-persist/integration/react";
+import StripeProvider from "./StripeProvider";
 
 export const Providers: React.FC<{ children: React.ReactNode }> = ({
    children,
@@ -15,7 +16,9 @@ export const Providers: React.FC<{ children: React.ReactNode }> = ({
             loading={null}
             persistor={persistor}
          >
-            <AuthProvider>{children}</AuthProvider>
+            <AuthProvider>
+               <StripeProvider>{children}</StripeProvider>
+            </AuthProvider>
          </PersistGate>
       </Provider>
    );

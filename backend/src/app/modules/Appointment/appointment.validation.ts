@@ -7,8 +7,8 @@ const createAppointment = z
     startsAt: z.string().datetime(),
     consultType: z.enum(["CHAT", "VOICE", "VIDEO"]),
   })
-  .refine((data) => new Date(data.startsAt) <= new Date(), {
-    message: "Start time must be future time",
+  .refine((data) => new Date(data.startsAt).getTime() > Date.now(), {
+    message: "Start time must be in the future (UTC)",
     path: ["startsAt"],
   });
 
@@ -16,8 +16,8 @@ const rescheduleAppointment = z
   .object({
     startsAt: z.string().datetime(),
   })
-  .refine((data) => new Date(data.startsAt) <= new Date(), {
-    message: "Start time must be future time",
+  .refine((data) => new Date(data.startsAt).getTime() > Date.now(), {
+    message: "Start time must be in the future (UTC)",
     path: ["startsAt"],
   });
 

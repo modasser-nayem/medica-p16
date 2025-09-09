@@ -46,7 +46,6 @@ const AddOrUpdateConsultationFee = ({
             { label: "Select", value: "" },
             { label: "BDT", value: "BDT" },
             { label: "USD", value: "USD" },
-            { label: "INR", value: "INR" },
          ],
       },
    ];

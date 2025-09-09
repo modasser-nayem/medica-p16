@@ -32,6 +32,8 @@ import {
    PhoneCall,
    Video,
 } from "lucide-react";
+import { appointmentApi } from "@/redux/api/appointment";
+import CheckoutForm from "@/components/form/CheckoutForm";
 
 const DoctorDetailsPage = () => {
    const user = useAppSelector(selectedUser);
@@ -50,8 +52,15 @@ const DoctorDetailsPage = () => {
    const [feeError, setFeeError] = useState("");
    const [slotError, setSlotError] = useState("");
 
+   // get doctor details
    const { data, isLoading, isError, refetch } =
       doctorApi.useGetDoctorDetailsQuery(id as string);
+
+   // appointment booking
+   const [
+      bookAppoint,
+      { data: appointData, error, isLoading: appointIsLoading },
+   ] = appointmentApi.useCreateAppointmentMutation();
 
    if (isLoading) return <Loading />;
    if (isError || !data?.data) {
@@ -92,7 +101,20 @@ const DoctorDetailsPage = () => {
 
    const handleConfirmBooking = () => {
       console.log(appointmentData);
-      toast.success("Successfully Booked Appointment");
+      if (
+         appointmentData.doctorId &&
+         appointmentData.patientId &&
+         appointmentData.consultType &&
+         appointmentData.startsAt
+      ) {
+         bookAppoint({
+            doctorId: appointmentData.doctorId,
+            patientId: appointmentData.patientId,
+            consultType: appointmentData.consultType.type,
+            startsAt: appointmentData.startsAt,
+         });
+         console.log(error);
+      }
    };
 
    return (
@@ -235,6 +257,7 @@ const DoctorDetailsPage = () => {
             openConfirmDialog={openConfirmDialog}
             setOpenConfirmDialog={setOpenConfirmDialog}
             onConfirmed={handleConfirmBooking}
+            isLoading={appointIsLoading}
          >
             {/* Doctor Info */}
             <div className="flex gap-4 items-center border rounded-lg p-4 bg-muted/50">
@@ -310,6 +333,12 @@ const DoctorDetailsPage = () => {
                )}
             </div>
          </ConfirmationDialog>
+
+         {appointData?.data && (
+            <CheckoutForm
+               clientSecret={appointData.data.clientSecret}
+            ></CheckoutForm>
+         )}
       </div>
    );
 };
