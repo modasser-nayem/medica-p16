@@ -64,27 +64,27 @@ const createAppointment = async (data: TCreateAppointment) => {
       patientId: data.patientId,
       doctorId: data.doctorId,
       consultType: data.consultType,
-      startsAt,
-      endsAt,
+      startsAt: startsAt,
+      endsAt: endsAt,
       price: fee.fee,
       currency: fee.currency,
       status: "PENDING",
     },
   });
 
-  // const intent = await paymentService.createPaymentIntent({
-  //   amount: Number(fee.fee),
-  //   currency: fee.currency,
-  //   metadata: {
-  //     appointmentId: newApt.id,
-  //     patientId: data.patientId,
-  //     doctorId: data.doctorId,
-  //   },
-  // });
+  const intent = await paymentService.createPaymentIntent({
+    amount: Number(fee.fee),
+    currency: fee.currency,
+    metadata: {
+      appointmentId: newApt.id,
+      patientId: data.patientId,
+      doctorId: data.doctorId,
+    },
+  });
 
   return {
     appointmentId: newApt.id,
-    clientSecret: "client_secret", // intent.clientSecret ,
+    clientSecret: intent.clientSecret,
   };
 };
 

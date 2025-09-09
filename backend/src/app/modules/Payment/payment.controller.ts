@@ -6,9 +6,21 @@ const handleStripeWebhook = asyncHandler(async (req, res) => {
   const sig = req.headers["stripe-signature"]!;
   const body = req.body;
 
-  const result = await paymentService;
+  const result = await paymentService.handleStripeWebhook({ sig, body });
 
   res.json({ received: true });
 });
 
-export const paymentController = { handleStripeWebhook };
+const getPayments = asyncHandler(async (req, res) => {
+  const result = await paymentService.getPayments({ filters: req.query });
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Successfully retrieved payments",
+    data: result.data,
+    pagination: result.pagination,
+  });
+});
+
+export const paymentController = { handleStripeWebhook, getPayments };

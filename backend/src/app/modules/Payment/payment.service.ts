@@ -1,8 +1,9 @@
 import prisma from "../../db/connector";
 import Stripe from "stripe";
-import { ICreatePaymentIntent } from "./payment.interface";
+import { ICreatePaymentIntent, IPaymentFilters } from "./payment.interface";
 import config from "../../config";
 import AppError from "../../errors/AppError";
+import { paginate } from "../../utils/pagination";
 
 const stripe = new Stripe(config.STRIPE_SECRET_KEY, {
   apiVersion: "2025-05-28.basil",
@@ -14,7 +15,7 @@ const createPaymentIntent = async (data: ICreatePaymentIntent) => {
   const paymentIntent = await stripe.paymentIntents.create({
     amount: data.amount * 100,
     currency: data.currency.toLowerCase(),
-    metadata: data.metadata,
+    metadata: { ...data.metadata, application: "Medica" },
     automatic_payment_methods: { enabled: true },
   });
 
@@ -61,6 +62,10 @@ const handleStripeWebhook = async (payload: {
       const appoint = await prisma.appointment.findUnique({
         where: { id: appointmentId },
       });
+
+      if (!appoint) {
+        break;
+      }
 
       await prisma.payment.update({
         where: { externalId: intent.id },
@@ -109,8 +114,25 @@ const refundPayment = async (payload: {
   return { refundId: refund.id };
 };
 
+const getPayments = async (payload: { filters: IPaymentFilters }) => {
+  const { page, limit, sortBy, sortOrder } = payload.filters;
+
+  // TODO: apply filters
+
+  const result = await paginate({
+    model: prisma.payment,
+    page,
+    limit,
+    sortBy,
+    sortOrder,
+  });
+
+  return result;
+};
+
 export const paymentService = {
   createPaymentIntent,
   handleStripeWebhook,
   refundPayment,
+  getPayments,
 };

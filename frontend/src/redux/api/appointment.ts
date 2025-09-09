@@ -16,8 +16,14 @@ export interface ICreateAppointment {
 
 export const appointmentApi = baseApi.injectEndpoints({
    endpoints: (builder) => ({
-      createAppointment: builder.mutation<SuccessResponse<any>, any>({
-         query: (data: ICreateAppointment) => ({
+      createAppointment: builder.mutation<
+         SuccessResponse<{
+            appointmentId: string;
+            clientSecret: string;
+         }>,
+         ICreateAppointment
+      >({
+         query: (data) => ({
             url: API_ENDPOINTS.APPOINTMENT.CREATE,
             method: API_METHODS.POST,
             body: data,
@@ -25,8 +31,11 @@ export const appointmentApi = baseApi.injectEndpoints({
          invalidatesTags: ["appointment"],
       }),
 
-      getAppointments: builder.query<SuccessResponse<any>, any>({
-         query: (filters?: IGetAppointmentsFilters) => ({
+      getAppointments: builder.query<
+         SuccessResponse<any>,
+         IGetAppointmentsFilters
+      >({
+         query: (filters?) => ({
             url: API_ENDPOINTS.APPOINTMENT.GET_LIST,
             method: API_METHODS.GET,
             params: filters,
@@ -35,22 +44,22 @@ export const appointmentApi = baseApi.injectEndpoints({
          providesTags: ["appointment"],
       }),
 
-      getAppointmentDetails: builder.query<SuccessResponse<any>, any>({
-         query: (id: string) => ({
+      getAppointmentDetails: builder.query<SuccessResponse<any>, string>({
+         query: (id) => ({
             url: API_ENDPOINTS.APPOINTMENT.DETAILS(id),
             method: API_METHODS.GET,
          }),
          extraOptions: { disableToast: true },
       }),
 
-      rescheduleAppointment: builder.mutation<SuccessResponse<any>, any>({
-         query: ({
-            data,
-            appointmentId,
-         }: {
+      rescheduleAppointment: builder.mutation<
+         SuccessResponse<any>,
+         {
             data: IRescheduleAppointment;
             appointmentId: string;
-         }) => ({
+         }
+      >({
+         query: ({ data, appointmentId }) => ({
             url: API_ENDPOINTS.APPOINTMENT.RESCHEDULE(appointmentId),
             method: API_METHODS.PUT,
             body: data,
@@ -58,14 +67,14 @@ export const appointmentApi = baseApi.injectEndpoints({
          invalidatesTags: ["appointment"],
       }),
 
-      cancelAppointment: builder.mutation<SuccessResponse<any>, any>({
-         query: ({
-            data,
-            appointmentId,
-         }: {
+      cancelAppointment: builder.mutation<
+         SuccessResponse<any>,
+         {
             data: ICancelAppointment;
             appointmentId: string;
-         }) => ({
+         }
+      >({
+         query: ({ data, appointmentId }) => ({
             url: API_ENDPOINTS.APPOINTMENT.CANCEL(appointmentId),
             method: API_METHODS.PATCH,
             body: data,
