@@ -24,9 +24,39 @@ export type ICancelAppointment = z.infer<
 >;
 
 export interface IGetAppointmentsFilters extends IPaginationQuery {
-   startsAt?: string;
-   endsAt?: string;
    status?: AppointmentStatus;
+}
+
+export interface IAppointmentList {
+   id: string;
+   consultType: ConsultationType;
+   startsAt: string;
+   endsAt: string;
+   status: AppointmentStatus;
+   patientId: string;
+   doctor: {
+      id: string;
+      name: string;
+      profileImage: string;
+   };
+}
+
+export interface IAppointmentDetails {
+   id: string;
+   consultType: ConsultationType;
+   startsAt: string;
+   endsAt: string;
+   status: AppointmentStatus;
+   patientId: string;
+   price: number;
+   currency: string;
+   doctor: {
+      id: string;
+      name: string;
+      profileImage: string;
+   };
+   createdAt: string;
+   updatedAt: string;
 }
 
 export interface IAppointment {

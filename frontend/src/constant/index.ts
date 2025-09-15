@@ -210,6 +210,12 @@ export const API_ENDPOINTS = {
       CANCEL: (id: string) => `/appointments/${id}/cancel`,
       DELETE: (id: string) => `/appointments/${id}`,
    },
+   PAYMENT: {
+      SUCCESS_HANDLER: (sessionId: string) => `/payments/success/${sessionId}`,
+      RETRY_PAYMENT_PROCESS: "/payments/retry",
+      REPAYMENT: "/payments/repayment",
+      GET_PAYMENTS: "/payments",
+   },
    DASHBOARD: {
       ADMIN_STATS: "/dashboard/admin-stats",
       DOCTOR_STATS: "/dashboard/doctor-stats",

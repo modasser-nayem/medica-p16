@@ -12,7 +12,5 @@ export type TRescheduleAppointment = z.infer<
 > & { appointmentId: string };
 
 export interface IGetAppointmentsFilters extends PaginationQuery {
-  startsAt?: string;
-  endsAt?: string;
   status?: AppointmentStatus;
 }

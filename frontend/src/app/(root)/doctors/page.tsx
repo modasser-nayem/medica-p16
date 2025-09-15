@@ -1,15 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import {
-   Search,
-   Heart,
-   Brain,
-   Baby,
-   Eye,
-   Bone,
-   Stethoscope,
-} from "lucide-react";
+import { Search } from "lucide-react";
 import { doctorApi } from "@/redux/api/doctor";
 import Loading from "@/components/ui/loading";
 import ErrorState from "@/components/shared/ErrorState";
@@ -19,7 +11,6 @@ import DoctorsList from "@/components/doctor/DoctorList";
 import { IGetDoctorsFilter } from "@/types";
 import CustomPagination from "@/components/shared/CustomPagination";
 import { departmentApi } from "@/redux/api/department";
-import Image from "next/image";
 
 const DoctorsPage = () => {
    const [filters, setFilters] = useState<IGetDoctorsFilter>({});
@@ -39,6 +30,9 @@ const DoctorsPage = () => {
          />
       );
    }
+
+   const doctors = data.data;
+   const pagination = data.pagination;
 
    const departments = departmentData?.data.map((dept) => ({
       id: dept.id,
@@ -124,21 +118,25 @@ const DoctorsPage = () => {
 
             {/* Doctors Grid */}
             <section className="py-12">
-               {data.data.length > 0 ? (
+               {doctors.length > 0 ? (
                   <>
                      <div className="">
-                        <DoctorsList doctors={data.data} />
+                        <DoctorsList doctors={doctors} />
                      </div>
 
                      {/* Pagination */}
 
-                     {data.pagination && (
+                     {pagination && (
                         <div className="mt-10">
                            <CustomPagination
-                              currentPage={data.pagination.page}
-                              totalPages={data.pagination.totalPage}
+                              currentPage={pagination.page}
+                              totalPages={pagination.totalPages}
                               onPageChange={(newPage) =>
                                  setFilters({ ...filters, page: newPage })
+                              }
+                              limit={pagination.limit}
+                              onLimitChange={(newLimit) =>
+                                 setFilters({ ...filters, limit: newLimit })
                               }
                            />
                         </div>

@@ -63,8 +63,16 @@ const DoctorScheduleSlots = ({
                   <CardContent>
                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                         {schedule.slots.map((slot: string, i: number) => {
-                           const parsed = parse(slot, "HH:mm", new Date());
-                           const formattedSlot = format(parsed, "hh:mm a"); // 10:30 AM
+                           const [hour, minute] = slot.split(":").map(Number);
+
+                           const dateObj = new Date(schedule.date);
+                           dateObj.setUTCHours(hour, minute, 0, 0);
+
+                           // Format into local time string
+                           const formattedSlot = format(dateObj, "hh:mm a");
+
+                           // const parsed = parse(slot, "HH:mm", new Date());
+                           // const formattedSlot = format(parsed, "hh:mm a"); // 10:30 AM
                            const isSelected =
                               selectedSlot === `${schedule.date}-${slot}`;
                            return (

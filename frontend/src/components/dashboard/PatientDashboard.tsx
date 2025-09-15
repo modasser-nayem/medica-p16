@@ -27,6 +27,8 @@ const PatientDashboard = () => {
       );
    }
 
+   console.log(statsData);
+
    return (
       <div className="space-y-6">
          <div>

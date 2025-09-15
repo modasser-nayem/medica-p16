@@ -19,8 +19,8 @@ const page = () => {
    if (isError || !data?.data) {
       return (
          <ErrorState
-            title="Unable to load fees"
-            description="There was a problem fetching consultation fees."
+            title="Unable to load schedules"
+            description="There was a problem fetching consultation schedules."
             onRetry={() => refetch()}
             isLoading={isLoading}
          />

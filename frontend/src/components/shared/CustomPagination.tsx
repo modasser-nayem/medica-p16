@@ -1,6 +1,7 @@
 import {
    Pagination,
    PaginationContent,
+   PaginationEllipsis,
    PaginationItem,
    PaginationLink,
    PaginationNext,
@@ -11,14 +12,17 @@ interface CustomPaginationProps {
    currentPage: number;
    totalPages: number;
    onPageChange: (page: number) => void;
+   limit?: number;
+   onLimitChange?: (limit: number) => void;
 }
 
 export default function CustomPagination({
    currentPage,
    totalPages,
    onPageChange,
+   limit,
+   onLimitChange,
 }: CustomPaginationProps) {
-   console.log(totalPages);
    if (totalPages <= 1) return null; // ✅ hide pagination if only 1 page
 
    const maxPageNumbersToShow = 5;
@@ -69,6 +73,34 @@ export default function CustomPagination({
                   </PaginationLink>
                </PaginationItem>
             ))}
+
+            {totalPages > 5 && (
+               <PaginationItem>
+                  <PaginationEllipsis />
+               </PaginationItem>
+            )}
+
+            {/* Limit */}
+            {limit && onLimitChange && (
+               <PaginationItem>
+                  <select
+                     className="border input py-0.5 px-0.5 bg-gray-100"
+                     name="limit"
+                     id="limit"
+                     value={limit}
+                     onChange={(e) => onLimitChange(Number(e.target.value))}
+                  >
+                     {[5, 10, 20, 30].map((item, i) => (
+                        <option
+                           value={item}
+                           key={i}
+                        >
+                           {item}
+                        </option>
+                     ))}
+                  </select>
+               </PaginationItem>
+            )}
 
             {/* Next Button */}
             <PaginationItem>

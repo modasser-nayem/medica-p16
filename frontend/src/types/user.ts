@@ -107,25 +107,6 @@ export interface Prescription {
    updatedAt: string;
 }
 
-export interface Payment {
-   id: string;
-   patientId: string;
-   patient: Patient;
-   appointmentId?: string;
-   labRequestId?: string;
-   amount: number;
-   currency: string;
-   status: PaymentStatus;
-   paymentMethod: PaymentMethod;
-   transactionId?: string;
-   description: string;
-   createdAt: string;
-   updatedAt: string;
-}
-
-export type PaymentStatus = "PENDING" | "COMPLETED" | "FAILED" | "REFUNDED";
-export type PaymentMethod = "CARD" | "BANK_TRANSFER" | "CASH" | "INSURANCE";
-
 export interface Notification {
    id: string;
    userId: string;

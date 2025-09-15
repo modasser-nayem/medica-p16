@@ -11,6 +11,19 @@ const handleStripeWebhook = asyncHandler(async (req, res) => {
   res.json({ received: true });
 });
 
+const successPaymentHandler = asyncHandler(async (req, res) => {
+  const result = await paymentService.successPaymentHandler(
+    req.params.sessionId,
+  );
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Successfully Payment",
+    data: result,
+  });
+});
+
 const getPayments = asyncHandler(async (req, res) => {
   const result = await paymentService.getPayments({ filters: req.query });
 
@@ -23,4 +36,36 @@ const getPayments = asyncHandler(async (req, res) => {
   });
 });
 
-export const paymentController = { handleStripeWebhook, getPayments };
+const retryPaymentProcess = asyncHandler(async (req, res) => {
+  const result = await paymentService.retryPaymentProcess({
+    sessionId: req.body.sessionId,
+  });
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Successfully retry payment process",
+    data: result,
+  });
+});
+
+const rePayment = asyncHandler(async (req, res) => {
+  const result = await paymentService.repayment({
+    appointmentId: req.body.appointmentId,
+  });
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Successfully Repayment",
+    data: result,
+  });
+});
+
+export const paymentController = {
+  handleStripeWebhook,
+  successPaymentHandler,
+  getPayments,
+  retryPaymentProcess,
+  rePayment,
+};

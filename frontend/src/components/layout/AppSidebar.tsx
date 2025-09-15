@@ -60,7 +60,7 @@ const AppSidebar = () => {
                },
                {
                   name: "Appointments",
-                  href: "/dashboard/appointments",
+                  href: "/dashboard/patient/appointments",
                   icon: Calendar,
                },
             ];
@@ -93,6 +93,11 @@ const AppSidebar = () => {
                ...items,
                { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
                { name: "Users", href: "/dashboard/admin/users", icon: Users },
+               {
+                  name: "Payments",
+                  href: "/dashboard/admin/payments",
+                  icon: DollarSign,
+               },
                {
                   name: "Department",
                   href: "/dashboard/admin/department",
