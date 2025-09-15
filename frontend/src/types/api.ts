@@ -1,8 +1,8 @@
 export type IPagination = {
    page: number;
    limit: number;
-   totalPage: number;
-   totalItems: number;
+   totalPages: number;
+   total: number;
 };
 
 // Success response

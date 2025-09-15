@@ -5,6 +5,7 @@ import { CheckCheck, Clock, Timer } from "lucide-react";
 import StatsCard from "./StatsCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { IPatientStats } from "@/types";
+import { format } from "date-fns";
 
 const PatientStats: React.FC<{ data: IPatientStats }> = ({ data }) => {
    const patientStats = [
@@ -54,12 +55,19 @@ const PatientStats: React.FC<{ data: IPatientStats }> = ({ data }) => {
                </div>
             </CardHeader>
             <CardContent>
-               <div className="text-2xl font-bold text-gray-900">
+               <div className="font-bold text-gray-900">
                   {data.upcomingAppointment ? (
-                     <div>
-                        date: {data.upcomingAppointment.date.toISOString()}
-                        time: {data.upcomingAppointment.time.toISOString()}
-                     </div>
+                     <p>
+                        {format(
+                           new Date(data.upcomingAppointment.startsAt),
+                           "EEEE, MMMM d, yyyy"
+                        )}
+                        ,
+                        {format(
+                           new Date(data.upcomingAppointment.startsAt),
+                           "hh:mm a"
+                        )}
+                     </p>
                   ) : (
                      <p className="text-lg">Not Available</p>
                   )}

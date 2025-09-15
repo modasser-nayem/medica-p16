@@ -239,7 +239,7 @@ model Appointment {
   patient      Patient       @relation(fields: [patientId], references: [id], onDelete: Cascade)
   doctor       Doctor        @relation(fields: [doctorId], references: [id], onDelete: Cascade)
   consultation Consultation?
-  payment      Payment?
+  payments      Payment[]
 
   @@unique([doctorId, startsAt]) // prevent double booking same start
   @@index([patientId, startsAt])
@@ -300,10 +300,11 @@ model ConsultationFee {
 
 model Payment {
   id            String        @id @default(uuid())
-  appointmentId String        @unique
+  appointmentId String
   amount        Int
   currency      String        @default("BDT")
   externalId    String        @unique
+  paymentIntentId String?
   method        String        @default("card")
   status        PaymentStatus @default(PENDING)
   createdAt     DateTime      @default(now())

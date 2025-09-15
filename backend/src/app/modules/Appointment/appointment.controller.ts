@@ -15,7 +15,7 @@ const createAppointment = asyncHandler(async (req, res) => {
 
 const getAppointments = asyncHandler(async (req, res) => {
   const result = await appointmentService.getAppointments({
-    userId: req.user.userId,
+    userId: req.user.profileId,
     filters: req.query,
   });
 

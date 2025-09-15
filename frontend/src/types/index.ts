@@ -7,6 +7,7 @@ export * from "./appointment";
 export * from "./analytics";
 export * from "./department";
 export * from "./doctor";
+export * from "./payment";
 
 export interface IAuditLog {
    id: string;

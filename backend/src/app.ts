@@ -6,15 +6,28 @@ import routers from "./app/routes";
 import { notfound } from "./app/middlewares/notFound";
 import { globalErrorHandler } from "./app/middlewares/globalErrorHandler";
 import config from "./app/config";
+import { stripeWebhookHandler } from "./app/modules/Payment/payment.routes";
 
 class App {
   public app: express.Application;
 
   constructor() {
     this.app = express();
+    // Mount webhook first (needs raw body)
+    this.mountStripeWebhook();
+
     this.config();
     this.routes();
     this.handleErrors();
+  }
+
+  private mountStripeWebhook() {
+    // Stripe requires raw body for signature verification
+    this.app.post(
+      "/api/v1/payments/webhook",
+      express.raw({ type: "application/json" }),
+      stripeWebhookHandler,
+    );
   }
 
   private config() {
@@ -26,6 +39,7 @@ class App {
         allowedHeaders: ["Content-Type", "Authorization"],
       }),
     );
+
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(cookieParser());

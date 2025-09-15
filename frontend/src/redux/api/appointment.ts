@@ -2,6 +2,8 @@ import { SuccessResponse } from "@/types/api";
 import { baseApi } from "./base";
 import { API_ENDPOINTS, API_METHODS } from "@/constant";
 import {
+   IAppointmentDetails,
+   IAppointmentList,
    ICancelAppointment,
    IGetAppointmentsFilters,
    IRescheduleAppointment,
@@ -19,7 +21,7 @@ export const appointmentApi = baseApi.injectEndpoints({
       createAppointment: builder.mutation<
          SuccessResponse<{
             appointmentId: string;
-            clientSecret: string;
+            checkoutUrl: string;
          }>,
          ICreateAppointment
       >({
@@ -29,10 +31,11 @@ export const appointmentApi = baseApi.injectEndpoints({
             body: data,
          }),
          invalidatesTags: ["appointment"],
+         extraOptions: { disableToast: true },
       }),
 
       getAppointments: builder.query<
-         SuccessResponse<any>,
+         SuccessResponse<IAppointmentList[]>,
          IGetAppointmentsFilters
       >({
          query: (filters?) => ({
@@ -44,7 +47,10 @@ export const appointmentApi = baseApi.injectEndpoints({
          providesTags: ["appointment"],
       }),
 
-      getAppointmentDetails: builder.query<SuccessResponse<any>, string>({
+      getAppointmentDetails: builder.query<
+         SuccessResponse<IAppointmentDetails>,
+         string
+      >({
          query: (id) => ({
             url: API_ENDPOINTS.APPOINTMENT.DETAILS(id),
             method: API_METHODS.GET,

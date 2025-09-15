@@ -14,14 +14,6 @@ import { IConsultationFee } from "@/types";
 import { useAppSelector } from "@/hooks/redux";
 import { selectedUser } from "@/redux/slice/authSlice";
 import toast from "react-hot-toast";
-import {
-   Dialog,
-   DialogContent,
-   DialogDescription,
-   DialogFooter,
-   DialogHeader,
-   DialogTitle,
-} from "@/components/ui/dialog";
 import ConfirmationDialog from "@/components/shared/ConfirmationDialog";
 import Link from "next/link";
 import {
@@ -33,9 +25,11 @@ import {
    Video,
 } from "lucide-react";
 import { appointmentApi } from "@/redux/api/appointment";
-import CheckoutForm from "@/components/form/CheckoutForm";
+import AuthDialog from "@/components/shared/AuthDialog";
 
 const DoctorDetailsPage = () => {
+   const router = useRouter();
+
    const user = useAppSelector(selectedUser);
    const { id } = useParams();
    const [appointmentData, setAppointmentData] = useState<
@@ -116,6 +110,10 @@ const DoctorDetailsPage = () => {
          console.log(error);
       }
    };
+
+   if (appointData?.data.checkoutUrl) {
+      router.push(appointData.data.checkoutUrl);
+   }
 
    return (
       <div className="min-h-screen">
@@ -333,54 +331,8 @@ const DoctorDetailsPage = () => {
                )}
             </div>
          </ConfirmationDialog>
-
-         {appointData?.data && (
-            <CheckoutForm
-               clientSecret={appointData.data.clientSecret}
-            ></CheckoutForm>
-         )}
       </div>
    );
 };
 
 export default DoctorDetailsPage;
-
-const AuthDialog = ({
-   openAuthDialog,
-   setOpenAuthDialog,
-}: {
-   openAuthDialog: boolean;
-   setOpenAuthDialog: (value: boolean) => void;
-}) => {
-   const router = useRouter();
-   return (
-      <Dialog
-         open={openAuthDialog}
-         onOpenChange={setOpenAuthDialog}
-      >
-         <DialogContent>
-            <DialogHeader>
-               <DialogTitle>Login Required</DialogTitle>
-            </DialogHeader>
-            <DialogDescription className="text-sm text-gray-600">
-               Please register or login to your account to proceed with booking.
-            </DialogDescription>
-            <DialogFooter className="flex gap-2 justify-end">
-               <Button
-                  variant="outline"
-                  onClick={() => setOpenAuthDialog(false)}
-               >
-                  Cancel
-               </Button>
-
-               <Button onClick={() => router.replace(ROUTES.LOGIN)}>
-                  Login
-               </Button>
-               <Button onClick={() => router.replace(ROUTES.REGISTER)}>
-                  Register
-               </Button>
-            </DialogFooter>
-         </DialogContent>
-      </Dialog>
-   );
-};

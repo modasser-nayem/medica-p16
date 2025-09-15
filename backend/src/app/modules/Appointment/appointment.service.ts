@@ -45,7 +45,7 @@ const createAppointment = async (data: TCreateAppointment) => {
   });
 
   if (patientConflict) {
-    throw new Error("You already have an appointment at this time.");
+    throw new AppError(400, "You already have an appointment at this time.");
   }
 
   // Get consultation fee
@@ -72,7 +72,7 @@ const createAppointment = async (data: TCreateAppointment) => {
     },
   });
 
-  const intent = await paymentService.createPaymentIntent({
+  const intent = await paymentService.createPaymentCheckoutSession({
     amount: Number(fee.fee),
     currency: fee.currency,
     metadata: {
@@ -84,7 +84,7 @@ const createAppointment = async (data: TCreateAppointment) => {
 
   return {
     appointmentId: newApt.id,
-    clientSecret: intent.clientSecret,
+    checkoutUrl: intent.checkoutUrl,
   };
 };
 
@@ -92,14 +92,12 @@ const getAppointments = async ({
   userId,
   filters,
 }: {
-  userId: string;
+  userId?: string;
   filters: IGetAppointmentsFilters;
 }) => {
   const {
     page,
     limit,
-    endsAt,
-    startsAt,
     status,
     sortBy = "startsAt",
     sortOrder = "desc",
@@ -107,12 +105,25 @@ const getAppointments = async ({
 
   // TODO: startsAt & EndsAt filter set
 
-  const where: Prisma.AppointmentWhereInput = {
-    OR: [
-      { doctor: { user: { id: userId } } },
-      { patient: { user: { id: userId } } },
-    ],
+  const where: Prisma.AppointmentWhereInput = {};
+  const select: Prisma.AppointmentSelect = {
+    id: true,
+    consultType: true,
+    startsAt: true,
+    endsAt: true,
+    status: true,
+    patientId: true,
+    doctor: {
+      select: {
+        id: true,
+        user: { select: { name: true, profileImage: true } },
+      },
+    },
   };
+
+  if (userId) {
+    where.OR = [{ patientId: userId }, { doctorId: userId }];
+  }
 
   if (status) where.status = status;
 
@@ -121,6 +132,7 @@ const getAppointments = async ({
     page,
     limit,
     where,
+    select,
     sortBy,
     sortOrder,
   });
@@ -149,6 +161,7 @@ const getAppointmentDetails = async (appointmentId: string) => {
       doctor: true,
       patient: true,
       consultation: true,
+      payments: true,
     },
   });
 
@@ -209,7 +222,7 @@ const rescheduleAppointment = async (data: TRescheduleAppointment) => {
   });
 
   if (patientConflict) {
-    throw new Error("You already have an appointment at this time.");
+    throw new AppError(400, "You already have an appointment at this time.");
   }
 
   const result = await prisma.appointment.update({
@@ -232,7 +245,9 @@ const cancelAppointment = async ({
 }) => {
   const appointment = await prisma.appointment.findUnique({
     where: { id: appointmentId },
-    include: { payment: true, consultation: true },
+    include: {
+      consultation: true,
+    },
   });
 
   if (!appointment) {
@@ -243,19 +258,22 @@ const cancelAppointment = async ({
     throw new AppError(400, "Completed appointment can't be cancel");
   }
 
-  if (appointment.startsAt < new Date())
-    throw new Error("Cannot cancel past appointments");
+  if (appointment.startsAt < new Date()) {
+    throw new AppError(400, "Cannot cancel past appointments");
+  }
+
+  const paymentRecord = await prisma.payment.findFirst({
+    where: { appointmentId: appointment.id, status: "COMPLETED" },
+  });
 
   let refundId: string | null = null;
 
-  if (appointment.status === "CONFIRMED") {
-    if (appointment.payment) {
-      const refund = await paymentService.refundPayment({
-        paymentId: appointment.payment.id,
-        stripeExternalId: appointment.payment.externalId,
-      });
-      refundId = refund.refundId;
-    }
+  if (paymentRecord && paymentRecord.paymentIntentId) {
+    const refund = await paymentService.refundPayment({
+      paymentId: paymentRecord.id,
+      paymentIntentId: paymentRecord.paymentIntentId,
+    });
+    refundId = refund.refundId;
   }
 
   await prisma.appointment.update({
